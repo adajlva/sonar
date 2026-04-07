@@ -1,0 +1,569 @@
+@import './variables.scss';
+@import './sidebar.scss';
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap');
+
+// =============================================
+// Bootstrap primary color overrides (DM green)
+// =============================================
+.btn-primary {
+  color: #fff !important;
+  background-color: $primary !important;
+  border-color: $primary !important;
+}
+.btn-primary:hover {
+  background-color: darken($primary, 8%) !important;
+  border-color: darken($primary, 10%) !important;
+}
+.btn-primary:active, .btn-primary.active, .show > .btn-primary.dropdown-toggle {
+  background-color: darken($primary, 10%) !important;
+  border-color: darken($primary, 12%) !important;
+}
+.btn-primary:focus, .btn-primary.focus {
+  box-shadow: 0 0 0 0.2rem rgba(83, 147, 58, 0.5) !important;
+}
+.btn-primary:disabled, .btn-primary.disabled {
+  background-color: $primary !important;
+  border-color: $primary !important;
+  opacity: 0.65;
+}
+
+.btn-outline-primary {
+  color: $primary !important;
+  border-color: $primary !important;
+}
+.btn-outline-primary:hover {
+  background-color: #dcdfe6 !important;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dcdfe6 !important;
+}
+
+.badge-primary  { background-color: $primary !important; }
+.badge-success  { background-color: #28a745 !important; color: #fff !important; }
+.badge-warning  { background-color: #ffc107 !important; color: #212529 !important; }
+.badge-danger   { background-color: #dc3545 !important; color: #fff !important; }
+.bg-primary     { background-color: $primary !important; }
+.text-primary   { color: $primary !important; }
+.border-primary { border-color: $primary !important; }
+
+// Tabs nav-link ativo
+.nav-tabs .nav-link.active {
+  background-color: $primary !important;
+  color: #fff !important;
+}
+
+// Bootstrap Vue b-tabs card header
+.card-header-tabs .nav-link.active,
+.nav-tabs .nav-link.bg-primary {
+  background-color: $primary !important;
+  color: #fff !important;
+}
+
+// Paginação
+.page-link { color: $primary; }
+.page-item.active .page-link {
+  background-color: $primary;
+  border-color: $primary;
+}
+
+// Checkbox/radio
+.custom-control-input:checked ~ .custom-control-label::before {
+  color: #fff;
+  border-color: $primary;
+  background-color: $primary;
+}
+
+// Table header
+.table .thead-dark th {
+  color: #fff;
+  background-color: $primary !important;
+  border-color: $primary !important;
+}
+
+// =============================================
+// Base styles
+// =============================================
+body {
+  background: #f1f1f1;
+  height: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, Poppins, sans-serif;
+}
+
+label { font-weight: 700; }
+
+html { height: 100%; box-sizing: border-box; }
+
+#app { height: 100%; }
+
+*, *:before, *:after { box-sizing: inherit; }
+
+.no-padding { padding: 0px !important; }
+.padding-content { padding: 4px 0; }
+
+a:focus, a:active { outline: none; }
+
+a, a:focus, a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.classic { color: #007bff !important; }
+a.classic:hover { text-decoration: underline !important; }
+
+div:focus { outline: none; }
+
+.fr  { float: right; }
+.fl  { float: left; }
+.pr-5 { padding-right: 5px; }
+.pl-5 { padding-left: 5px; }
+.block { display: block; }
+.pointer { cursor: pointer; }
+.inlineBlock { display: block; }
+.nopadding { padding: 0; }
+
+.clearfix {
+  &:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+}
+
+// =============================================
+// Layout containers
+// =============================================
+.app-container { padding: 10px; }
+.components-container { margin: 30px 50px; position: relative; }
+.pagination-container { margin-top: 30px; }
+.text-center { text-align: center; }
+
+.filter-container {
+  padding-bottom: 10px;
+  .filter-item {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 10px;
+  }
+}
+
+// =============================================
+// Card / Tab styles (DMPeople exato)
+// =============================================
+.card { box-shadow: 2px 2px 2px #c0c4cc; }
+
+.card-header {
+  padding-bottom: 2px !important;
+  padding: 0;
+}
+
+.card-body {
+  border-top: solid 2px $primary;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.card-header-tabs {
+  margin-right: -0.625rem;
+  margin-bottom: -0.75rem;
+  margin-left: -0.625rem;
+  border-bottom: 0;
+  padding: 10px !important;
+}
+
+.nav-tabs .nav-link {
+  border: 0.5px solid #c0c4cc !important;
+  border-radius: 0.25rem !important;
+  font-size: 14px;
+  margin-left: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #666 !important;
+  display: inline-block;
+
+  &:active {
+    color: #fff !important;
+  }
+}
+
+.box {
+  border: solid 1px #c0c4cc;
+  box-shadow: 2px 2px 2px #c0c4cc;
+}
+
+.label-icon { font-weight: bold; }
+.container-fluid { padding-left: 0; padding-right: 0; }
+
+// =============================================
+// Utility / layout helpers
+// =============================================
+.quadro {
+  margin: 20px;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.quadro-tarefa {
+  border: solid 1px #c0c4cc;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+  margin: 30px;
+  padding: 5px;
+  box-shadow: 2px 2px 2px #c0c4cc;
+}
+
+.campo-obrigatorio { font-size: 0.8em; }
+.obrigatorio { color: red; }
+
+.section {
+  background-color: $primary;
+  color: #fff;
+  min-height: 35px;
+  padding: 5px;
+  white-space: pre-line;
+  vertical-align: middle;
+  padding-bottom: 20px;
+}
+
+.separator { width: 100%; height: 30px; background-color: #fff; }
+
+.quando {
+  border: solid 1px #c0c4cc;
+  border-radius: 5px;
+  padding: 5px;
+  box-shadow: 2px 2px 2px #c0c4cc;
+  width: 100%;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.modal-header { color: #e64242 !important; }
+.modal-body { display: flex; flex-wrap: wrap; text-align: center; word-wrap: break-word; }
+
+pre { color: #000 !important; font-size: 1.1rem !important; }
+
+// =============================================
+// El-menu-item: ícone acima do nome (igual DMPeople)
+// =============================================
+.el-menu-item {
+  font-size: 0.9rem;
+  height: 70px;
+  line-height: 1.3 !important;
+  color: #303133;
+  padding: 0 20px;
+  list-style: outside;
+  cursor: pointer;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+  box-sizing: border-box;
+  white-space: normal !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+// =============================================
+// Multiselect (vue-multiselect)
+// =============================================
+.multiselect { line-height: 16px; }
+.multiselect--active { z-index: 1000 !important; }
+.multiselect__input { display: none; }
+.multiselect__option:hover, .multiselect__option--selected { background-color: $primary; }
+.multiselect__option--highlight { background: $primary !important; outline: none; color: #fff; }
+.multiselect__option--highlight::after { background: darken($primary, 5%) !important; outline: none; color: #fff; }
+
+.multiselect__tag {
+  position: relative;
+  display: inline-block;
+  padding: 4px 26px 4px 10px;
+  border-radius: 5px;
+  margin-right: 10px;
+  color: #fff;
+  line-height: 1;
+  background: $primary !important;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+
+.multiselect__tag-icon {
+  cursor: pointer;
+  margin-left: 7px;
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  font-weight: 700;
+  font-style: normal;
+  width: 22px;
+  text-align: center;
+  line-height: 22px;
+  transition: all 0.2s ease;
+  border-radius: 5px;
+  background-color: $primary;
+  color: #fff;
+}
+.multiselect__tag-icon:hover { background-color: darken($primary, 8%) !important; color: #fff; }
+.multiselect__tag-icon::after { color: #fff; }
+
+.multiselect__tags {
+  display: block;
+  width: 100% !important;
+  min-height: calc(1.5em + 0.75rem + 2px) !important;
+  overflow: auto;
+  padding: 0.375rem 0.75rem !important;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1;
+  color: #000;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+
+.multiselect__placeholder {
+  color: rgba(12, 12, 12, 0.8);
+  display: inline-block;
+  margin-bottom: 10px;
+  padding-top: 2px;
+}
+
+// =============================================
+// Vue Treeselect
+// =============================================
+.vue-treeselect__multi-value-item { font-size: 1rem !important; background-color: $primary !important; color: #fff !important; }
+.vue-treeselect__value-remove { color: #fff !important; }
+.vue-treeselect__placeholder { color: rgba(12, 12, 12, 0.8) !important; }
+.vue-treeselect__control-arrow { color: rgba(12, 12, 12, 0.8) !important; }
+.vue-treeselect__control {
+  border: 1px solid #ced4da !important;
+  height: calc(1.5em + 0.75rem + 2px);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  vertical-align: middle;
+  background: #fff;
+  border-radius: 0.25rem;
+}
+.vue-treeselect__checkbox--checked { color: #fff; border-color: $primary !important; background-color: $primary !important; }
+.vue-treeselect__checkbox--indeterminate { color: #fff; border-color: $primary !important; background-color: $primary !important; }
+
+// =============================================
+// Forms / layout
+// =============================================
+.form-group label { font-weight: bold !important; text-align: start !important; }
+
+.custom-control { text-align: start; }
+
+.autocomplete-input {
+  border: 1px solid #ced4da !important;
+  height: calc(1.5em + 0.75rem + 2px);
+  background-color: #fff !important;
+  border-radius: 0.25rem !important;
+}
+
+.fieldset-border {
+  border: 1px groove #dcdfe6 !important;
+  border-radius: 5px;
+  padding: 0 0.5em 0.5em 0.5em !important;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.fieldset-border .legend-border {
+  font-size: 1em !important;
+  font-weight: bold;
+  text-align: left !important;
+  width: auto;
+  padding: 0 5px;
+}
+
+// =============================================
+// Scrollbar
+// =============================================
+::-webkit-scrollbar { display: block; width: 10px; height: 10px; overflow: auto; background-color: #fff; }
+::-webkit-scrollbar-thumb { background: #aaa; border-radius: 5px; }
+
+// =============================================
+// Grid / Lists
+// =============================================
+.unit-groups {
+  display: flex; flex-direction: row; justify-content: space-around; align-items: center;
+  border: solid 1px #dcdcdc; padding: 4px; border-radius: 5px; margin-bottom: 3px;
+  min-height: 40px !important; cursor: pointer;
+}
+.title-group { display: flex; justify-content: flex-start; width: calc(100% - 150px); }
+.btn-grid { display: flex; flex-direction: row; width: 150px; justify-content: flex-end; }
+
+.branco { min-height: 30px; background-color: #fff; padding: 5px; }
+.cinza  { min-height: 30px; background-color: #f5f7fa; padding: 5px; }
+
+.grupo-scroll { height: calc(100vh - 140px); overflow-y: scroll; overflow-x: hidden; }
+
+.scrollable-list {
+  display: flex; flex-direction: row; justify-content: space-around; align-items: center;
+  border: solid 1px #dcdcdc; padding: 4px; border-radius: 5px; margin-bottom: 3px;
+  min-height: 40px !important; cursor: pointer;
+}
+.title-scrollable-list { display: flex; justify-content: flex-start; width: 100% !important; }
+.btn-actions-scrollable-list { display: flex; flex-direction: row; width: 150px; justify-content: flex-end; }
+.btn-status-scrollable-list {
+  display: flex; flex-direction: row; width: 100%;
+  white-space: nowrap; justify-content: flex-end; font-size: 12px; margin-right: 5px;
+}
+
+.search-with-export { display: flex; justify-content: space-between; flex-wrap: nowrap; width: 100%; }
+.btn-export-excel { width: 250px; }
+
+.flex-row { display: flex; flex-direction: row; text-align: justify; }
+.flex-row-scrollable-list {
+  display: flex; flex-direction: row; margin-left: 12%; margin-right: 12%; justify-content: space-between;
+}
+
+.palavras-chave { display: flex; flex-direction: row; justify-content: flex-start; width: 100%; flex-wrap: wrap; }
+.clicable { cursor: pointer; }
+
+.poppins { font-family: "Poppins"; font-style: normal; font-size: 16px; line-height: 24px; }
+
+// =============================================
+// Fields / data display
+// =============================================
+.list-fields-white { background-color: #ffffff; color: #000; font-size: 16px; min-height: 30px; white-space: pre-line; padding-bottom: 15px; }
+.list-fields-gray  { background-color: #f2f2f2; color: #000; font-size: 16px; min-height: 30px; white-space: pre-line; padding-bottom: 15px; }
+
+.field-branco {
+  display: flex; flex-direction: row; justify-content: flex-start;
+  background-color: #ffffff; color: #000; font-size: 16px;
+  align-items: center; border: solid 1px #f2f2f2; height: 30px;
+}
+.field-cinza {
+  display: flex; flex-direction: row; justify-content: flex-start;
+  background-color: #f2f2f2; color: #000; font-size: 16px;
+  align-items: center; border: solid 1px #f2f2f2; height: 30px;
+}
+.fieldCell-branco { display: flex; background-color: #ffffff; justify-content: flex-start; align-items: center; border: solid 1px #f2f2f2; width: 100%; }
+.fieldCell-cinza  { display: flex; background-color: #f2f2f2; justify-content: flex-start; align-items: center; border: solid 1px #f2f2f2; width: 100%; }
+
+.linha-branca {
+  display: flex; flex-direction: row; background-color: #ffffff; color: #000; font-size: 16px;
+  align-items: center; min-height: 40px; text-align: center; justify-content: center;
+}
+.linha-cinza {
+  display: flex; flex-direction: row; background-color: #f2f2f2; color: #000; font-size: 16px;
+  align-items: center; min-height: 40px; text-align: center; justify-content: center;
+}
+
+// =============================================
+// Forms DM Academy
+// =============================================
+.quadro-form {
+  text-align: left !important;
+  padding-bottom: 20px !important;
+  margin-top: 20px !important;
+  background: #fff !important;
+}
+.quadro-form .title-processos { color: #fff !important; background: #212121 !important; margin: 0 !important; padding: 20px !important; }
+.quadro-form .custom-input-description { margin-top: 0 !important; font-weight: 300 !important; font-size: 13px !important; background-color: #212121 !important; color: #fff !important; }
+.quadro-form .section { background-color: #f1f1f1 !important; color: #212121 !important; text-align: center !important; margin-bottom: 40px !important; }
+.quadro-form .form-group { padding-left: 20px !important; padding-right: 20px !important; }
+.quadro-form .btn { margin-left: 20px !important; }
+.quadro-form .mb-4 { padding: 20px !important; border: 0 !important; border-radius: 0 !important; margin-bottom: 0 !important; }
+
+.vue-form-generator .form-group { margin: 0; width: 100%; }
+.vue-form-generator > div { display: flex; justify-content: space-between; flex-wrap: wrap; flex-grow: 1; }
+
+.shared-frame-form { margin-left: 25%; margin-right: 25%; margin-top: 10px; }
+
+.obrigado { font-size: 1.8rem; font-weight: 600; }
+.resposta-enviada { font-size: 1.3rem; font-weight: normal; }
+
+.dm-custom-form-btn-save.field-submit > div > input[type=submit] {
+  color: #fff !important;
+  background-color: $primary !important;
+  border-color: $primary !important;
+}
+.dm-custom-form-btn-back.field-submit > div > input[type=submit] {
+  color: #fff !important;
+  background-color: $primary !important;
+  border-color: $primary !important;
+}
+
+.dm-modal-cancel-button {
+  background: #ffffff;
+  border: 0.5px solid #666666;
+  color: #343434;
+}
+.dm-modal-cancel-button:hover { background: #dae0e5; }
+
+// =============================================
+// Custom head class, icons
+// =============================================
+.custom-head-class { border-top-left-radius: 10px; border-top-right-radius: 10px; }
+.icon-export { width: 24px; height: 24px; }
+
+.print-pdf { width: 30px; height: auto; cursor: pointer; }
+.btn-back { width: 25px; height: auto; cursor: pointer; }
+.btn-share { width: 100px; }
+.arquivos-fieldset { display: flex; align-self: end; justify-content: flex-end; min-width: 250px; }
+
+// =============================================
+// Animation
+// =============================================
+.dm-input-date-limit-error {
+  position: relative;
+  animation: shake .1s linear;
+  animation-iteration-count: 3;
+  border: solid 1px #dc3534 !important;
+  box-shadow: 4px 4px 2px rgba(220,53,52,0.67);
+}
+.dm-input-date-limit-error:focus { box-shadow: 4px 4px 2px rgba(220,53,52,0.67); }
+
+@keyframes shake {
+  0%   { left: -5px; }
+  100% { right: -5px; }
+}
+
+// =============================================
+// Col overrides
+// =============================================
+.col-md-8 {
+  padding-left: 0 !important;
+  flex: 0 0 70.666667% !important;
+  max-width: 75% !important;
+}
+.col-md-4 {
+  padding-right: 5px !important;
+  max-width: 29% !important;
+}
+
+// =============================================
+// Media Queries
+// =============================================
+@media (max-width: 1024px) {
+  .search-with-export { width: 100%; flex-wrap: wrap; }
+}
+
+@media (max-width: 768px) {
+  .btn-clear-search { display: none; }
+  .col-md-8 { padding: 15px !important; flex: 0 0 99% !important; max-width: 99% !important; }
+  .col-md-4 { max-width: 100% !important; padding: 15px !important; }
+  .flex-row { display: flex; flex-direction: column; }
+  .fieldset-border { border: 1px groove #dcdfe6 !important; border-radius: 5px; padding: 0 0.5em 0.5em 0.5em !important; text-align: center; width: 100%; display: flex; flex-direction: column; }
+  .shared-frame-form { margin-left: 5px; margin-right: 5px; }
+  .flex-row-scrollable-list { display: flex; flex-direction: column; margin-left: 0; margin-right: 0; }
+}

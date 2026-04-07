@@ -1,0 +1,50 @@
+// =============================================
+// DM People - Identidade Visual Verde
+// Cor primária: #53933a
+// =============================================
+
+// Override Bootstrap primary BEFORE importing Bootstrap
+$primary: #53933a;
+$success: #28a745;
+$theme-colors: (
+  "primary": $primary,
+  "success": $success,
+  "danger": #ff4136
+);
+
+// base colors
+$blue: #324157;
+$light-blue: #3A71A8;
+$red: #C03639;
+$pink: #E65D6E;
+$green: #30B08F;
+$tiffany: #4AB7BD;
+$yellow: #FEC171;
+$panGreen: #30B08F;
+
+// =============================================
+// Sidebar / Layout variables
+// =============================================
+$menuText: #757575;
+$menuActiveText: #ffffff;
+$subMenuActiveText: #f4f4f5;
+
+$menuBg: #212121;
+$menuHover: #333333;
+
+$subMenuBg: #1f2d3d;
+$subMenuHover: #001528;
+
+$sideBarWidth: 130px;
+
+// Export for JS usage
+:export {
+  menuText: $menuText;
+  menuActiveText: $menuActiveText;
+  subMenuActiveText: $subMenuActiveText;
+  menuBg: $menuBg;
+  menuHover: $menuHover;
+  subMenuBg: $subMenuBg;
+  subMenuHover: $subMenuHover;
+  sideBarWidth: $sideBarWidth;
+}
