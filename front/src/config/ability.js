@@ -10,6 +10,14 @@ export function defineAbilities() {
     { action: 'read', subject: 'grid_inWorkplaceModule' },
     { action: 'read', subject: 'registerFiles_inWorkplaceModule' },
     { action: 'read', subject: 'requests_inWorkplaceModule' },
-    { action: 'manage', subject: 'admission' }
+    { action: 'manage', subject: 'admission' },
+    { action: 'read', subject: 'records' },
+    { action: 'manage', subject: 'records' },
+    { action: 'read', subject: 'followup' },
+    { action: 'manage', subject: 'followup' },
+    { action: 'read', subject: 'training' },
+    { action: 'manage', subject: 'training' },
+    { action: 'read', subject: 'execution' },
+    { action: 'manage', subject: 'execution' }
   ])
 }

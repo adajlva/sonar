@@ -119,6 +119,7 @@ export default {
   empresa: 'Empresa',
   empresamin: 'empresa',
   estrutura: 'Estrutura',
+  estruturas: 'Estruturas',
   estruturamin: 'estrutura',
   cargo: 'Cargo',
   cargomin: 'cargo',
@@ -266,6 +267,20 @@ export default {
   adatadeterminodesteagendamentojapassou: 'A data de término deste agendamento já passou.',
   esteagendamentonaoestamaisdisponivel: 'Este agendamento não está mais disponível.',
   treinamentos: 'Treinamentos',
+  novotreinamento: 'Novo treinamento',
+  placeholderbuscanomeoudescricaotreinamento:
+    'Buscar pelo nome ou objetivo do treinamento',
+  placeholderbuscanometreinamento: 'Buscar pelo nome do treinamento',
+  formularios: 'Formulários',
+  avaliacoes: 'Avaliações',
+  gradetreinamentos: 'Grade de treinamentos',
+  cadastros: 'Cadastros',
+  dadosmockadosformularios:
+    'Lista mockada de formulários (substitui o fluxo completo com API/DMForm).',
+  dadosmockadosavaliacoes:
+    'Lista mockada de avaliações (substitui o fluxo completo com API/DMEvaluation).',
+  respostas: 'Respostas',
+  ver: 'Ver',
   treinamento: 'Treinamento',
   origem: 'Origem',
   statusdotreinamento: 'Status do treinamento',
@@ -289,5 +304,142 @@ export default {
   ultimoano: 'Último ano',
   datapersonalizada: 'Data personalizada',
   de: 'De',
-  ate: 'Até'
+  ate: 'Até',
+
+  // Cadastro de treinamento (TrainingRegister / DMPeople)
+  cadastro: 'Cadastro',
+  planejamento: 'Planejamento',
+  quantidademaximadeagendamentosinfo: 'Quantidade máxima de agendamentos:',
+  diasaposplanejamentoalerttitulo: 'Dias após o início da prestação de serviços',
+  diasaposplanejamentoalerttexto:
+    'Novos agendamentos são permitidos enquanto houver unidades pendentes de planejamento. Quando não restar nenhuma, não será possível cadastrar mais.',
+  diasapospillpodecadastrar:
+    'Cadastre agendamentos enquanto houver unidades pendentes ({pendentes}).',
+  diasapospillcadastradoscomresto:
+    '{count} agendamento(s) cadastrado(s). Restam {pendentes} unidade(s) pendente(s).',
+  diasapospillsempendentes:
+    'Não há unidades pendentes — não é possível cadastrar novos agendamentos.',
+  vocepodecriaratéagendamentosparatreinamento:
+    'Você pode criar até {count} agendamentos para este treinamento',
+  unidadespendentesplanejamentohelper:
+    '{pendentes} de {total} unidades pendentes de planejamento',
+  unidadespendentesplanejamentosecao: 'Unidades pendentes de planejamento:',
+  selecioneaunidade: 'Selecione a unidade',
+  nenhumagendamentocadastradopodeate:
+    'Nenhum agendamento cadastrado, você pode cadastrar até {max}',
+  agendamentoscadastradoscontagem:
+    '{current} de {max} agendamentos cadastrados neste treinamento',
+  nenhumagendamentocadastradoainda: 'Nenhum agendamento cadastrado ainda.',
+  selecioneunidadepreenchadadosprimeiro:
+    'Selecione uma unidade e preencha os dados para criar o primeiro agendamento.',
+  todososagendamentosplanejados:
+    'Todos os agendamentos deste treinamento já foram planejados.',
+  umagendamentocadastradopodemais:
+    '1 agendamento cadastrado, você ainda pode cadastrar mais {rest}',
+  nagendamentoscadastradospodemais:
+    '{count} agendamentos cadastrados, você ainda pode cadastrar mais {rest}',
+  unidadeslabelresumo: 'Unidade(s):',
+  dataprevistadeiniciolabel: 'Data prevista de início:',
+  dataterminolabel: 'Data de término:',
+  tempodeduracaolabel: 'Tempo de duração:',
+  instrutorlabel: 'Instrutor:',
+  instrutornaoinformado: '-',
+  pessoasparticipanteslabel: 'Pessoas participantes:',
+  checkderetencaolabel: 'Check de retenção:',
+  avaliacaodereacaolabel: 'Avaliação de reação:',
+  certezaexcluiragendamento: 'Excluir este agendamento? Os dados preenchidos serão perdidos.',
+  atencao: 'Atenção',
+  quaispessoasparticiparao: 'Quais pessoas participarão?',
+  selecioneaspessoas: 'Selecione as pessoas',
+  digiteotempoemminutos: 'Digite o tempo em minutos',
+  selecioneoformulario: 'Selecione o formulário',
+  pessoasselecionadasresumo: '{count} pessoa(s) selecionada(s)',
+  digiteonomedoinstrutor: 'Digite o nome do instrutor',
+  dataprevistadeinicio: 'Data prevista de início',
+  datadetermino: 'Data de término',
+  tempodeduracaodoagendamentoemminutos:
+    'Tempo de duração do agendamento (em min.):',
+  checkderetencao: 'Check de retenção',
+  avaliacaodereacao: 'Avaliação de reação',
+  indicarinstrutor: 'Indicar instrutor',
+  informeotempodeduracaoemmin: 'Informe o tempo de duração em min.',
+  cliqueparaselecionarumaavaliacao: 'Clique para selecionar uma avaliação',
+  cliqueparaselecionarumformulario: 'Clique para selecionar um formulário',
+  errocarregarelegiveis: 'Erro ao carregar colaboradores elegíveis.',
+  estecolaboradornaopodeserremovido:
+    'Este colaborador não pode ser removido.',
+  nometreinamento: 'Nome do treinamento',
+  nenhumaopcaodisponivel: 'Nenhuma opção disponível',
+  semsubopcoes: 'Sem sub-opções',
+  vocedeveselecionaronivelnoqualotreinamentoseraalocado:
+    'Você deve selecionar o nível no qual o treinamento será alocado.',
+  indicadorassociado: 'Indicador associado',
+  quaiskpismetricassaoimpactadospelarealizacaodestetreinamento:
+    'Quais KPIs/métricas são impactadas pela realização deste treinamento.',
+  descreveroindicador: 'Descrever o indicador',
+  valordotreinamento: 'Valor do treinamento',
+  valormonetariorecursofinanceiroqueseraaplicadonestetreinamento:
+    'Valor monetário, recurso financeiro que será aplicado neste treinamento.',
+  anoreferencia: 'Ano referência',
+  selecioneoanoreferencia: 'Selecione o ano de referência',
+  otreinamentoeobrigatorio: 'O treinamento é obrigatório?',
+  planejamentorecorrente: 'Planejamento recorrente',
+  marqueessaopcaoparatreinamentosqueacontecemdeformacontinua:
+    'Marque essa opção para treinamentos que acontecem de forma contínua.',
+  umaoumais: 'uma ou mais',
+  gradesmin: 'grades',
+  estruturasmin: 'estruturas',
+  agendamentos: 'Agendamentos',
+  tipoagendamento: 'Tipo de agendamento',
+  selecioneumtipodeagendamento: 'Selecione um tipo de agendamento',
+  quantidadedeagendamentos: 'Quantidade de agendamentos',
+  selecioneaquantidadedeagendamentos: 'Selecione a quantidade de agendamentos',
+  diasaposiniciodaprestacaodeservicos:
+    'Dias após início da prestação de serviços',
+  insiraaquantidadededias: 'Insira a quantidade de dias',
+  tipodevinculo: 'Tipo de vínculo',
+  selecioneumoumaistiposdevinculo: 'Selecione um ou mais tipos de vínculo',
+  tiposcargos: 'Tipos de cargos',
+  tiposcargosmin: 'tipos de cargos',
+  quaiscargosdevemparticipar: 'Quais cargos devem participar?',
+  cargosmin: 'cargos',
+  quaisfuncoesparticiparaodotreinamento:
+    'Quais funções participarão do treinamento',
+  funcoesmin: 'funções',
+  quaiscolaboradoresparticiparaodotreinamento:
+    'Quais colaboradores participarão do treinamento?',
+  colaboradoresmin: 'colaboradores',
+  admitidosapartirde: 'Admitidos a partir de',
+  objetivodotreinamento: 'Objetivo do treinamento',
+  descrevaoobjetivodotreinamento: 'Descreva o objetivo do treinamento',
+  contabilizarnomodulodeperformance: 'Contabilizar no módulo de performance',
+  indicadorcorrespondentenomodulodeperformance:
+    'Indicador correspondente no módulo de performance',
+  selecioneoindicador: 'Selecione o indicador',
+  palavraschaverelacionadasaotreinamento:
+    'Palavras-chave relacionadas ao treinamento',
+  selecioneocertificado: 'Selecione o certificado',
+  templatecertificado: 'Template do certificado',
+  somenteimagempng: 'somente imagem PNG',
+  informepalavrachave: 'Informe uma palavra-chave',
+  ocamponaopodetermaisque500caracteres:
+    'O campo nome do treinamento não pode ultrapassar 500 caracteres',
+  pressioneenterparaselecionar: 'Pressione enter para selecionar',
+  presioneenterpararemover: 'Pressione enter para remover',
+  selecionado: 'Selecionado',
+  marcartodos: 'Marcar todos',
+  semregistros: 'Sem registros',
+  nenhumcolaboradorencontrado: 'Nenhum colaborador encontrado',
+  vinculadoaumcolaboradordeoutraunidade:
+    'Há colaborador vinculado de outra unidade a este vínculo/cargo/função.',
+  textonomecampo: 'Texto de ajuda do campo',
+  atualizado: 'atualizado',
+  cadastrado: 'cadastrado',
+  naoepossivelatualizarpoisotreinamentojainiciou:
+    'Não é possível atualizar pois o treinamento já iniciou.',
+  naoepossivelsalvarpoisjaexisteumtreinamentocomestenome:
+    'Não é possível salvar pois já existe um treinamento com este nome.',
+  cliqueparaselecionarouarrasteoarquivo:
+    'Clique para selecionar ou arraste o arquivo',
+  unidadeinativa: 'unidade inativa'
 }

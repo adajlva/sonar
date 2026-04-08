@@ -26,6 +26,7 @@ import 'vue-multiselect/dist/vue-multiselect.min.css'
 import { abilitiesPlugin } from '@casl/vue'
 import { defineAbilities } from './config/ability'
 
+import Autocomplete from '@trevoreyre/autocomplete-vue'
 import '@trevoreyre/autocomplete-vue/dist/style.css'
 import '@/styles/index.scss'
 
@@ -39,6 +40,7 @@ Vue.use(Vuelidate)
 Vue.use(AsyncComputed)
 Vue.use(infiniteScroll)
 Vue.use(abilitiesPlugin, defineAbilities())
+Vue.use(Autocomplete)
 
 Vue.config.productionTip = false
 

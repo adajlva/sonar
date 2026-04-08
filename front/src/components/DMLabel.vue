@@ -1,5 +1,5 @@
 <template>
-  <span class="dm-label">{{ $t(label) }}</span>
+  <span class="dm-form-label">{{ $t(label) }}</span>
 </template>
 
 <script>

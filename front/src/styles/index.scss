@@ -257,7 +257,7 @@ pre { color: #000 !important; font-size: 1.1rem !important; }
 // =============================================
 .el-menu-item {
   font-size: 0.9rem;
-  height: 70px;
+  height: 72px !important;
   line-height: 1.3 !important;
   color: #303133;
   padding: 0 20px;
@@ -364,7 +364,20 @@ pre { color: #000 !important; font-size: 1.1rem !important; }
 // =============================================
 // Forms / layout
 // =============================================
-.form-group label { font-weight: bold !important; text-align: start !important; }
+/* Mesmo peso/tamanho do rótulo da grade (DMLabelRequiredAndHelp): 16px / 700 / 24px */
+.form-group label,
+.form-group legend.col-form-label {
+  font-size: 16px;
+  font-weight: 700 !important;
+  line-height: 24px;
+  text-align: start !important;
+}
+
+.dm-form-label {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+}
 
 .custom-control { text-align: start; }
 
@@ -566,4 +579,84 @@ pre { color: #000 !important; font-size: 1.1rem !important; }
   .fieldset-border { border: 1px groove #dcdfe6 !important; border-radius: 5px; padding: 0 0.5em 0.5em 0.5em !important; text-align: center; width: 100%; display: flex; flex-direction: column; }
   .shared-frame-form { margin-left: 5px; margin-right: 5px; }
   .flex-row-scrollable-list { display: flex; flex-direction: column; margin-left: 0; margin-right: 0; }
+}
+
+// =============================================
+// Input / form-control — todos os estados (DM verde)
+// =============================================
+
+// Padrão (repouso)
+.form-control,
+.custom-select,
+.b-form-select,
+select.form-control {
+  border: 1px solid #ced4da;
+  color: #495057;
+  background-color: #fff;
+  border-radius: 0.25rem;
+}
+
+// Focus / Active — borda e sombra verdes
+.form-control:focus,
+.form-control:active,
+.custom-select:focus,
+.custom-select:active,
+select.form-control:focus,
+select.form-control:active,
+.b-form-select:focus,
+textarea.form-control:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+input[type="datetime-local"]:focus {
+  border-color: lighten($primary, 20%) !important;
+  box-shadow: 0 0 0 0.2rem rgba(83, 147, 58, 0.25) !important;
+  outline: 0 !important;
+  color: #495057;
+  background-color: #fff;
+}
+
+// Multiselect — estado ativo (aberto)
+.multiselect--active .multiselect__tags {
+  border-color: lighten($primary, 20%) !important;
+  box-shadow: 0 0 0 0.2rem rgba(83, 147, 58, 0.25) !important;
+}
+
+// Vue Treeselect — estado focado
+.vue-treeselect--focused .vue-treeselect__control {
+  border-color: lighten($primary, 20%) !important;
+  box-shadow: 0 0 0 0.2rem rgba(83, 147, 58, 0.25) !important;
+  outline: 0 !important;
+}
+
+// Autocomplete input — estado focado
+.autocomplete-input:focus {
+  border-color: lighten($primary, 20%) !important;
+  box-shadow: 0 0 0 0.2rem rgba(83, 147, 58, 0.25) !important;
+  outline: 0 !important;
+}
+
+// b-form-file — estado focado
+.custom-file-input:focus ~ .custom-file-label {
+  border-color: lighten($primary, 20%) !important;
+  box-shadow: 0 0 0 0.2rem rgba(83, 147, 58, 0.25) !important;
+}
+
+// b-form-checkbox / b-form-radio — estado focado
+.custom-control-input:focus ~ .custom-control-label::before {
+  box-shadow: 0 0 0 0.2rem rgba(83, 147, 58, 0.25) !important;
+}
+.custom-control-input:focus:not(:checked) ~ .custom-control-label::before {
+  border-color: lighten($primary, 20%) !important;
+}
+
+// Input group append/prepend — estado focado
+.input-group > .form-control:focus {
+  z-index: 3;
 }

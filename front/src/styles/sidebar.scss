@@ -48,9 +48,10 @@
     }
 
     a {
-      display: inline-block;
+      display: block;
       width: 100%;
       overflow: hidden;
+      line-height: 0;
     }
 
     .svg-icon {
@@ -68,9 +69,13 @@
     .el-menu-item {
       font-size: 12.3px;
       line-height: normal;
-      margin-top: 2px;
+      margin-top: 0;
 
       svg { margin-bottom: 5px; }
+    }
+
+    .el-menu > div {
+      margin-bottom: 2px;
     }
 
     .el-menu {

@@ -1,5 +1,5 @@
 const state = {
-  userClient: null,
+  userClient: 'demo-client',
   userProfile: 'admin_sistema',
   userCpf: null,
   userId: null,

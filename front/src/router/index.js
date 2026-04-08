@@ -131,8 +131,23 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
-        component: NotImplemented,
+        component: () => import('@/views/trainings/TrainingHome'),
         name: 'Treinamentos',
+        meta: { title: 'integracaotreinamento', icon: 'education', affix: true, requiresAuth: false }
+      }
+    ],
+    meta: { resource: 'integracaotreinamento', icon: 'education' }
+  },
+  {
+    path: '/training-tabs',
+    hidden: true,
+    component: Layout,
+    redirect: '/training-tabs/records',
+    children: [
+      {
+        path: 'records',
+        component: () => import('@/views/trainings/records/TrainingRecordsTabs'),
+        name: 'TreinamentosCadastros',
         meta: { title: 'integracaotreinamento', icon: 'education', affix: true, requiresAuth: false }
       }
     ],

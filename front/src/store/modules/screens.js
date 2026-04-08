@@ -8,7 +8,11 @@ const state = {
     registerFiles_inWorkplaceModule: 'registerFiles_inWorkplaceModule',
     requests_inWorkplaceModule: 'requests_inWorkplaceModule',
     rollbackplan_inWorkplaceModule: 'rollbackplan_inWorkplaceModule',
-    admission: 'admission'
+    admission: 'admission',
+    records: 'records',
+    followup: 'followup',
+    training: 'training',
+    execution: 'execution'
   }
 }
 

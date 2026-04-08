@@ -19,6 +19,15 @@ import user from './modules/user'
 import rollbackPlan from './modules/rollbackPlan'
 import person from './modules/person'
 import peopleTabs from './modules/peopleTabs'
+import currentTraingRegisterTab from './modules/currentTraingRegisterTab'
+import currentTrainingRecordsTabIndex from './modules/currentTrainingRecordsTabIndex'
+import newTrainingFormTabs from './modules/newTrainingFormTabs'
+import newTrainingRegister from './modules/newTrainingRegister'
+import dmEvaluation from './modules/dmEvaluation'
+import customForms from './modules/customForms'
+import customFormsTabs from './modules/customFormsTabs'
+import formBuilderTabs from './modules/formBuilderTabs'
+import modules from './modules/modules'
 import { constantRoutes } from '@/router'
 
 export default new Vuex.Store({
@@ -38,7 +47,16 @@ export default new Vuex.Store({
     user,
     rollbackPlan,
     person,
-    peopleTabs
+    peopleTabs,
+    currentTraingRegisterTab,
+    currentTrainingRecordsTabIndex,
+    newTrainingFormTabs,
+    newTrainingRegister,
+    dmEvaluation,
+    customForms,
+    customFormsTabs,
+    formBuilderTabs,
+    modules
   },
   getters: {
     sidebar: (state) => state.app.sidebar,

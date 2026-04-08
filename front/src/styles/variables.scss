@@ -12,6 +12,16 @@ $theme-colors: (
   "danger": #ff4136
 );
 
+// ── Bootstrap input / form-control focus variables ──
+$component-active-bg:        $primary;
+$input-focus-border-color:   lighten($primary, 25%);        // ~#8ed461
+$input-focus-box-shadow:     0 0 0 0.2rem rgba(83, 147, 58, 0.25);
+$input-btn-focus-width:      0.2rem;
+$input-btn-focus-color:      rgba(83, 147, 58, 0.25);
+$input-btn-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-color;
+$input-border-color:         #ced4da;
+$input-color:                #495057;
+
 // base colors
 $blue: #324157;
 $light-blue: #3A71A8;

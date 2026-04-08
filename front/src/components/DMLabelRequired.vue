@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span class="dm-form-label">
     <span v-if="twoPointsBefore">{{ $t(label) }}<span class="obrigatorio"> *</span>:</span>
     <span v-else>{{ $t(label) }}<span class="obrigatorio"> *</span></span>
   </span>
