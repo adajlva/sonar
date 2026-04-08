@@ -47,7 +47,8 @@
       display: none;
     }
 
-    a {
+    /* exceto o link da logo (flex + img centralizado em Logo.vue) */
+    a:not(.sidebar-logo-link) {
       display: block;
       width: 100%;
       overflow: hidden;

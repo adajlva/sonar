@@ -1,12 +1,16 @@
 <template>
   <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
-      <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img src="@/assets/dmpeople-fb.png" class="sidebar-logo" />
-      </router-link>
-      <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img src="@/assets/dmpeople-fb.png" class="sidebar-logo" />
-        <h1 class="sidebar-title">{{ title }}</h1>
+      <router-link
+        class="sidebar-logo-link"
+        to="/"
+        :key="collapse ? 'collapse' : 'expand'"
+      >
+        <img
+          src="@/assets/dmpeople-fb.png"
+          class="sidebar-logo"
+          alt="DMPeople"
+        />
       </router-link>
     </transition>
   </div>
@@ -19,11 +23,6 @@ export default {
     collapse: {
       type: Boolean,
       required: true
-    }
-  },
-  data() {
-    return {
-      title: 'DMPeople'
     }
   }
 }
@@ -41,40 +40,55 @@ export default {
 
 .sidebar-logo-container {
   position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
   width: 100%;
   height: 65px;
-  line-height: 50px;
   background: #2b2f3a;
-  text-align: center;
   overflow: hidden;
   padding: 10px;
+  box-sizing: border-box;
 
+  /* router-link → <a.sidebar-logo-link.router-link-active> */
   & .sidebar-logo-link {
-    height: 100%;
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    min-width: 0;
+    min-height: 0;
     width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    color: inherit;
+    box-sizing: border-box;
+  }
 
-    & .sidebar-logo {
-      width: 100%;
-      height: auto;
-      vertical-align: middle;
-      margin-top: 0;
-    }
+  & .sidebar-logo-link.router-link-active,
+  & .sidebar-logo-link.router-link-exact-active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-    & .sidebar-title {
-      display: inline-block;
-      margin: 0;
-      color: #fff;
-      font-weight: 600;
-      line-height: 50px;
-      font-size: 14px;
-      font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
-      vertical-align: middle;
-    }
+  & .sidebar-logo {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 40px;
+    height: auto;
+    object-fit: contain;
+    flex-shrink: 0;
   }
 
   &.collapse {
     .sidebar-logo {
-      margin-right: 0px;
+      margin-right: 0;
+      max-height: 44px;
     }
   }
 }
