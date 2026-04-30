@@ -10,7 +10,7 @@ export const newTrainingEligibleService = {
           _id: 'el-mock-1',
           personBond: 'pb1',
           person: { name: 'ALANNA STEFANI DOS SANTOS', document: '14131847737' },
-          unity: 'u1',
+          unity: 'u4',
           status: 'pending',
           schedules: []
         },
@@ -18,7 +18,7 @@ export const newTrainingEligibleService = {
           _id: 'el-mock-2',
           personBond: 'pb2',
           person: { name: 'ALEXANDRE FATTORI JUNIOR', document: '132312123321' },
-          unity: 'u1',
+          unity: 'u4',
           status: 'pending',
           schedules: []
         }

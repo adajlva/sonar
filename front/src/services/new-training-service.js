@@ -119,8 +119,8 @@ let mockList = [
     bonds: ['b1'],
     positions: ['p3'],
     positionRoles: ['r2'],
-    unities: ['u1'],
-    unitiesCadastro: ['u1']
+    unities: ['u4'],
+    unitiesCadastro: ['u4']
   }),
   mockTraining({
     _id: 'nt-2',
@@ -130,8 +130,8 @@ let mockList = [
     qtdDaysAfterTheStartService: 30,
     qtdNewTrainingSchedules: null,
     isRecurringPlanning: true,
-    unities: ['u1', 'u2'],
-    unitiesCadastro: ['u1', 'u2']
+    unities: ['u4', 'u4b'],
+    unitiesCadastro: ['u4', 'u4b']
   }),
   mockTraining({ _id: 'nt-3', name: 'Segurança da Informação', status: 'scheduled', isRequired: false }),
   mockTraining({ _id: 'nt-4', name: 'LGPD — Fundamentos', status: 'draft' })

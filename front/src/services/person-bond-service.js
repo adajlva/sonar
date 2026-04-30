@@ -10,28 +10,8 @@
  * para as folhas que existem em UNITY_REFS_FOR_SEED.
  */
 const UNITY_PARENT_TO_LEAVES = {
-  'client-demo': [
-    'u1',
-    'u1b',
-    'u1c',
-    'u1d',
-    'u2',
-    'u2b',
-    'u2c',
-    'u2d',
-    'u2e',
-    'u3',
-    'u3b',
-    'u3c',
-    'u4',
-    'u4b',
-    'u5'
-  ],
-  'reg-sul': ['u1', 'u1b', 'u1c', 'u1d'],
-  'reg-sudeste': ['u2', 'u2b', 'u2c', 'u2d', 'u2e'],
-  'reg-nordeste': ['u3', 'u3b', 'u3c'],
-  'reg-centro-oeste': ['u4', 'u4b'],
-  'reg-norte': ['u5']
+  'client-demo': ['u4', 'u4b'],
+  'reg-centro-oeste': ['u4', 'u4b']
 }
 
 function expandUnityFilterRefs(unities) {
@@ -49,23 +29,7 @@ function expandUnityFilterRefs(unities) {
 }
 
 /** Folhas da árvore em unity-service (mock) */
-const UNITY_REFS_FOR_SEED = [
-  'u1',
-  'u1b',
-  'u1c',
-  'u1d',
-  'u2',
-  'u2b',
-  'u2c',
-  'u2d',
-  'u2e',
-  'u3',
-  'u3b',
-  'u3c',
-  'u4',
-  'u4b',
-  'u5'
-]
+const UNITY_REFS_FOR_SEED = ['u4', 'u4b']
 
 /** 5 colaboradores mockados por estrutura; rotaciona cargos para o multiselect achar resultados */
 const PER_UNITY_SEED = 5
