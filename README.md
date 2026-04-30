@@ -59,7 +59,7 @@ O projeto já possui `vercel.json` configurado na raiz. Para fazer o deploy:
 ## Estrutura
 
 ```
-sonar/
+23113/
 ├── front/              # Aplicação Vue CLI
 │   ├── public/         # index.html
 │   ├── src/

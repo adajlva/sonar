@@ -408,6 +408,10 @@ export default {
   funcoesmin: 'funções',
   quaiscolaboradoresparticiparaodotreinamento:
     'Quais colaboradores participarão do treinamento?',
+  quaiscolaboradoresparticiparaodaunidadeprefix:
+    'Quais colaboradores da unidade ',
+  quaiscolaboradoresparticiparaodaunidadesuffix:
+    ' participarão do treinamento?',
   colaboradoresmin: 'colaboradores',
   admitidosapartirde: 'Admitidos a partir de',
   objetivodotreinamento: 'Objetivo do treinamento',

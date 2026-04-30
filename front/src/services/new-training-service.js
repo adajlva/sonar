@@ -1,5 +1,5 @@
 /**
- * Mock — Integração e Treinamento > Cadastros (sonar)
+ * Mock — Integração e Treinamento > Cadastros (23113)
  * Garante `schedules` coerente com tipo / quantidade (comportamento esperado pelo planejamento).
  */
 const mockTraining = (overrides = {}) => ({
@@ -51,15 +51,25 @@ function emptySchedule(trainingId, suffix) {
   }
 }
 
-/** Alinha ao fluxo DMPeople: agendamentos = N blocos; dias após = 1 bloco simplificado */
-function ensureSchedules(training) {
+/** Alinha ao fluxo DMPeople: agendamentos = N blocos por estrutura no cadastro; dias após = 1 bloco simplificado */
+export function ensureSchedules(training) {
   const t = JSON.parse(JSON.stringify(training))
   if (!Array.isArray(t.schedules)) t.schedules = []
 
   if (t.type === 'schedules') {
+    const m = Math.max(1, Number(t.qtdNewTrainingSchedules) || 1)
+    const refCount =
+      Array.isArray(t.unitiesCadastro) && t.unitiesCadastro.length
+        ? t.unitiesCadastro.length
+        : Array.isArray(t.unities) && t.unities.length
+          ? t.unities.length
+          : 0
+    const perStructureTotal =
+      refCount > 0 ? refCount * m : m
     const count = Math.max(
       1,
-      Number(t.qtdNewTrainingSchedules) || t.schedules.length || 1
+      perStructureTotal,
+      t.schedules.length || 0
     )
     let n = t.schedules.length
     while (n < count) {

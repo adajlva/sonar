@@ -1,144 +1,239 @@
-const mockDocs = [
-  {
-    _id: 'pb1',
-    person: { _id: 'per1', name: 'Alanna Stefani dos Santos', document: '14131847737' },
-    personBond: { _id: 'bond1' },
-    admissionDate: '2024-01-10',
-    dismissalDate: null,
-    bond: 'b1',
-    position: 'p3',
-    unity: 'u1',
-    role: 'r2'
-  },
-  {
-    _id: 'pb2',
-    person: { _id: 'per2', name: 'Alexandre Fattori Junior', document: '132312123321' },
-    personBond: { _id: 'bond2' },
-    admissionDate: '2025-01-15',
-    dismissalDate: null,
-    bond: 'b1',
-    position: 'p1',
-    unity: 'u1',
-    role: 'r2'
-  },
-  {
-    _id: 'pb3',
-    person: { _id: 'per3', name: 'Bruno Carvalho Mendes', document: '52987654001' },
-    personBond: { _id: 'bond3' },
-    admissionDate: '2023-06-01',
-    dismissalDate: null,
-    bond: 'b2',
-    position: 'p5',
-    unity: 'u2',
-    role: 'r3'
-  },
-  {
-    _id: 'pb4',
-    person: { _id: 'per4', name: 'Carla Nunes Ferreira', document: '98765432100' },
-    personBond: { _id: 'bond4' },
-    admissionDate: '2024-03-20',
-    dismissalDate: null,
-    bond: 'b1',
-    position: 'p7',
-    unity: 'u2b',
-    role: 'r2'
-  },
-  {
-    _id: 'pb5',
-    person: { _id: 'per5', name: 'Diego Ramos Silva', document: '45678912345' },
-    personBond: { _id: 'bond5' },
-    admissionDate: '2022-11-11',
-    dismissalDate: null,
-    bond: 'b1',
-    position: 'p9',
-    unity: 'u1c',
-    role: 'r4'
-  },
-  {
-    _id: 'pb6',
-    person: { _id: 'per6', name: 'Eduarda Martins Costa', document: '32165498700' },
-    personBond: { _id: 'bond6' },
-    admissionDate: '2024-08-01',
-    dismissalDate: null,
-    bond: 'b3',
-    position: 'p10',
-    unity: 'u1',
-    role: 'r2'
-  },
-  {
-    _id: 'pb7',
-    person: { _id: 'per7', name: 'Felipe Oliveira Souza', document: '11122233344' },
-    personBond: { _id: 'bond7' },
-    admissionDate: '2023-02-14',
-    dismissalDate: null,
-    bond: 'b4',
-    position: 'p8',
-    unity: 'u2',
-    role: 'r3'
-  },
-  {
-    _id: 'pb8',
-    person: { _id: 'per8', name: 'Gabriela Rocha Lima', document: '55566677788' },
-    personBond: { _id: 'bond8' },
-    admissionDate: '2025-03-10',
-    dismissalDate: null,
-    bond: 'b1',
-    position: 'p14',
-    unity: 'u3',
-    role: 'r2'
-  },
-  {
-    _id: 'pb9',
-    person: { _id: 'per9', name: 'Henrique Dias Pereira', document: '99988877766' },
-    personBond: { _id: 'bond9' },
-    admissionDate: '2022-05-22',
-    dismissalDate: null,
-    bond: 'b2',
-    position: 'p21',
-    unity: 'u4',
-    role: 'r3'
-  },
-  {
-    _id: 'pb10',
-    person: { _id: 'per10', name: 'Isabela Freitas Cardoso', document: '44433322211' },
-    personBond: { _id: 'bond10' },
-    admissionDate: '2024-11-30',
-    dismissalDate: null,
-    bond: 'b1',
-    position: 'p24',
-    unity: 'u2d',
-    role: 'r2'
-  },
-  {
-    _id: 'pb11',
-    person: { _id: 'per11', name: 'João Victor Almeida', document: '12312312399' },
-    personBond: { _id: 'bond11' },
-    admissionDate: '2023-09-09',
-    dismissalDate: null,
-    bond: 'b5',
-    position: 'p30',
-    unity: 'u5',
-    role: 'r2'
-  },
-  {
-    _id: 'pb12',
-    person: { _id: 'per12', name: 'Karina Duarte Pires', document: '88877766655' },
-    personBond: { _id: 'bond12' },
-    admissionDate: '2025-01-20',
-    dismissalDate: null,
-    bond: 'b1',
-    position: 'p18',
-    unity: 'u1b',
-    role: 'r6'
+/**
+ * Mock de vínculos de pessoa × estrutura para o autocomplete
+ * "Quais colaboradores participarão do treinamento?" (cadastro) e o planejamento.
+ * Cada estrutura (unity) tem exatamente 5 colaboradores mockados; com N estruturas
+ * selecionadas, o filtro retorna até 5×N opções. Não é regra de negócio ao salvar.
+ */
+/**
+ * Quando o usuário marca uma região ou a raiz no Treeselect, o filtro envia o
+ * referenceId do nó pai — os mocks só têm `unity` nas folhas. Expandimos pais
+ * para as folhas que existem em UNITY_REFS_FOR_SEED.
+ */
+const UNITY_PARENT_TO_LEAVES = {
+  'client-demo': [
+    'u1',
+    'u1b',
+    'u1c',
+    'u1d',
+    'u2',
+    'u2b',
+    'u2c',
+    'u2d',
+    'u2e',
+    'u3',
+    'u3b',
+    'u3c',
+    'u4',
+    'u4b',
+    'u5'
+  ],
+  'reg-sul': ['u1', 'u1b', 'u1c', 'u1d'],
+  'reg-sudeste': ['u2', 'u2b', 'u2c', 'u2d', 'u2e'],
+  'reg-nordeste': ['u3', 'u3b', 'u3c'],
+  'reg-centro-oeste': ['u4', 'u4b'],
+  'reg-norte': ['u5']
+}
+
+function expandUnityFilterRefs(unities) {
+  if (!Array.isArray(unities) || !unities.length) return unities
+  const set = new Set()
+  for (const ref of unities) {
+    const leaves = UNITY_PARENT_TO_LEAVES[ref]
+    if (leaves && leaves.length) {
+      leaves.forEach((id) => set.add(id))
+    } else {
+      set.add(ref)
+    }
   }
+  return [...set]
+}
+
+/** Folhas da árvore em unity-service (mock) */
+const UNITY_REFS_FOR_SEED = [
+  'u1',
+  'u1b',
+  'u1c',
+  'u1d',
+  'u2',
+  'u2b',
+  'u2c',
+  'u2d',
+  'u2e',
+  'u3',
+  'u3b',
+  'u3c',
+  'u4',
+  'u4b',
+  'u5'
 ]
+
+/** 5 colaboradores mockados por estrutura; rotaciona cargos para o multiselect achar resultados */
+const PER_UNITY_SEED = 5
+const POSITION_CYCLE = [
+  'p3',
+  'p5',
+  'p1',
+  'p7',
+  'p9',
+  'p14',
+  'p24',
+  'p8',
+  'p10',
+  'p16',
+  'p11',
+  'p12'
+]
+
+/** Nomes completos fictícios (estilo BR) — sem numeração no exibido */
+const FICTITIOUS_PERSON_NAMES = [
+  'Ana Carolina Mendes Souza',
+  'Ricardo Oliveira Lima',
+  'Fernanda Rodrigues Costa',
+  'Carlos Eduardo Almeida Nascimento',
+  'Patrícia Gomes Duarte',
+  'Lucas Martins Ferreira',
+  'Juliana Ribeiro Cavalcanti',
+  'Felipe Santos Barbosa',
+  'Mariana Lopes Teixeira',
+  'André Henrique Carvalho',
+  'Camila Freitas Monteiro',
+  'Rodrigo Pereira Azevedo',
+  'Beatriz Nogueira Ramos',
+  'Thiago Moura Cardoso',
+  'Larissa Dias Fonseca',
+  'Bruno Augusto Correia',
+  'Amanda Vieira Machado',
+  'Guilherme Castro Rocha',
+  'Isabela Pinto Guimarães',
+  'Diego Fernandes Lacerda',
+  'Renata Cunha Batista',
+  'Paulo Roberto Melo',
+  'Vanessa Teles Arruda',
+  'Matheus Sales Moreira',
+  'Priscila Holanda Prado',
+  'Gustavo Henrique Farias',
+  'Tatiane Borges Coelho',
+  'Eduardo Mattos Peixoto',
+  'Simone Aguiar Tavares',
+  'Leonardo Rezende Pacheco',
+  'Daniela Brito Magalhães',
+  'Fábio Luís Mesquita',
+  'Cristiane Moura Siqueira',
+  'João Victor Andrade',
+  'Eliane Porto Vasconcelos',
+  'Henrique Galvão Bueno',
+  'Raquel Muniz Torquato',
+  'Vinícius Paiva Damasceno',
+  'Adriana Lessa Bandeira',
+  'Marcelo Silveira Pontes',
+  'Bianca Drummond Borghetti',
+  'Rafael Costa Valadares',
+  'Letícia Amaral Figueiredo',
+  'Otávio Mendonça Seixas',
+  'Silvia Regina Toledo',
+  'Igor Camargo Bastos',
+  'Natália Freire Borba',
+  'Alexandre Pinho Salgado',
+  'Michele Antunes Viana',
+  'Renan Coimbra Godoi',
+  'Carolina Xavier Diniz',
+  'Douglas Mota Parente',
+  'Sabrina Lemos Arantes',
+  'Wagner Prado Cantuária',
+  'Flávia Monte Negreiros',
+  'Emerson Duarte Guimarães',
+  'Jéssica Brandão Silveira',
+  'Alex Sandro Reis Coutinho',
+  'Monique Teodoro Lins',
+  'Antônio Sérgio Freire',
+  'Helena Cruz Sacramento',
+  'Caio Nunes Pedrosa',
+  'Cláudia Moura Aguiar',
+  'Leandro César Medeiros',
+  'Débora Falcão Tenório',
+  'Sérgio Luís Maranhão',
+  'Elisa Andrade Queiroz',
+  'Marcos Vinícius Dantas',
+  'Lúcia Helena Trovão',
+  'Roberto Cláudio Pinheiro',
+  'Aline Ferreira Mattos',
+  'Nelson Franco Cabral',
+  'Karina Spínola Vilela',
+  'Pedro Augusto Furtado',
+  'Solange Meireles Braga',
+  'Everton Silva Noronha',
+  'Regina Célia Fontes',
+  'Evandro Costa Guimarães',
+  'Meire Oliveira Dourado',
+  'Júlio César Honório',
+  'Rosângela Peixoto Lima',
+  'Danilo Freitas Abreu',
+  'Viviane Costa Mello',
+  'Márcio Antônio Rezende',
+  'Tânia Mara Cardoso',
+  'Cláudio Roberto Malta',
+  'Sandra Regina Passos',
+  'Fabiano Duarte Lopes',
+  'Neide Santos Arruda',
+  'Rogério Melo Freitas',
+  'Inês Cristina Novaes',
+  'Nilson Pereira Braga',
+  'Valéria Cristina Mota',
+  'Edson Luís Carneiro',
+  'Mônica Silveira Torres',
+  'Gilberto Ramos Esteves',
+  'Teresa Cristina Paes',
+  'Osvaldo Mendes Cruz',
+  'Zilda Ferreira Basílio',
+  'Orlando Costa Matos',
+  'Norma Suely Damasceno',
+  'Mário Sérgio Freitas',
+  'Iraci Mendonça Leite'
+]
+
+function mockPersonName(unityIndex, slotIndex) {
+  const k =
+    (unityIndex * PER_UNITY_SEED + slotIndex) %
+    FICTITIOUS_PERSON_NAMES.length
+  return FICTITIOUS_PERSON_NAMES[k]
+}
+
+function buildMockDocs() {
+  const rows = []
+  let seq = 0
+  UNITY_REFS_FOR_SEED.forEach((unity, unityIndex) => {
+    for (let i = 0; i < PER_UNITY_SEED; i++) {
+      seq += 1
+      const id = `pb-${unity}-${i}`
+      const position = POSITION_CYCLE[i % POSITION_CYCLE.length]
+      rows.push({
+        _id: id,
+        person: {
+          _id: `per-${unity}-${i}`,
+          name: mockPersonName(unityIndex, i),
+          document: String(10000000000 + seq).slice(0, 11)
+        },
+        personBond: { _id: `bond-${unity}-${i}` },
+        admissionDate: '2024-01-10',
+        dismissalDate: null,
+        bond: 'b1',
+        position,
+        unity,
+        role: 'r2'
+      })
+    }
+  })
+  return rows
+}
+
+const mockDocs = buildMockDocs()
 
 function filterByCriteria(docs, filter) {
   if (!filter || typeof filter !== 'object') return docs
   const bonds = filter.bonds || []
   const positions = filter.positions || []
   const roles = filter.roles || []
-  const unities = filter.unities || []
+  const unities = expandUnityFilterRefs(filter.unities || [])
   return docs.filter((d) => {
     if (bonds.length && !bonds.includes(d.bond)) return false
     if (positions.length && !positions.includes(d.position)) return false

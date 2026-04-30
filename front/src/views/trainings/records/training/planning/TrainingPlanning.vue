@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="quadro">
     <DMAlert ref="dmAlert" />
 
@@ -66,36 +66,43 @@
           />
         </b-form-group>
       </b-col>
-      <b-col md="6" lg="6">
+      <b-col
+        v-if="isPlanningDmPeopleLayout"
+        md="6"
+        lg="6"
+      >
         <b-form-group>
           <template v-slot:label>
             <DMLabelRequired label="estruturas" />
-            <multiselect
-              id="planning-unities"
-              v-model="training.unities"
-              :clear-on-select="false"
-              :close-on-select="true"
-              :multiple="true"
-              :options="structureMultiselectOptions"
-              :preserve-search="true"
-              :disabled="!canEditPlanningUnities"
-              label="name"
-              track-by="referenceId"
-              :placeholder="structureMultiselectPlaceholder"
-              :select-label="$t('pressioneenterparaselecionar')"
-              :deselect-label="$t('presioneenterpararemover')"
-              :selected-label="$t('selecionado')"
-            />
-            <b-form-checkbox
-              v-if="isPlanningDmPeopleLayout"
-              class="mt-2"
-              :disabled="!canEditPlanningUnities"
-              @change="nrOnToggleAllStructures"
-            >
-              {{ $t("marcartodos") }}
-            </b-form-checkbox>
           </template>
-          <template v-if="isPlanningDmPeopleLayout">
+          <multiselect
+            id="planning-unities"
+            :value="training.unities"
+            :clear-on-select="false"
+            :close-on-select="true"
+            :multiple="true"
+            :options="structureMultiselectOptions"
+            :preserve-search="true"
+            :disabled="!canEditPlanningUnities"
+            label="name"
+            track-by="referenceId"
+            :placeholder="structureMultiselectPlaceholder"
+            :select-label="$t('pressioneenterparaselecionar')"
+            :deselect-label="$t('presioneenterpararemover')"
+            :selected-label="$t('selecionado')"
+            @input="nrOnPlanningUnitiesInput"
+          >
+            <template slot="beforeList">
+              <b-form-checkbox
+                v-model="nrAllPlanningStructuresSelected"
+                class="ml-2 mt-2 mb-1"
+                :disabled="!canEditPlanningUnities"
+              >
+                {{ $t("marcartodos") }}
+              </b-form-checkbox>
+            </template>
+          </multiselect>
+          <template v-if="isDaysAfterServiceType">
             <small
               class="form-text d-block mt-1"
               :class="
@@ -150,7 +157,6 @@
       </b-col>
     </b-row>
     <div v-if="schedules">
-      <!-- Agendamentos (recorrente ou não): layout DMPeople — um bloco por vez -->
       <template v-if="isPlanningDmPeopleLayout">
         <template v-if="nrFormScheduleKey !== null">
           <div
@@ -281,96 +287,241 @@
               </b-col>
             </b-row>
             <template v-if="isNonRecurringSchedulesPlanning">
-              <b-row>
-                <b-col cols="12">
-                  <b-form-group label-for="planning-person-autocomplete">
-                    <template v-slot:label>
-                      <DMLabelRequired
-                        label="quaiscolaboradoresparticiparaodotreinamento"
-                      />
-                    </template>
-                    <autocomplete
-                      ref="planningPersonAutocomplete"
-                      :search="filterPeoplePlanning"
-                      :disabled="
-                        !isValidForPlanningPeopleSearch || !canBeChange(key)
-                      "
-                      :debounce-time="500"
-                      :placeholder="
-                        $t('cliqueparaselecionar') +
-                          ' ' +
-                          $t('umoumais') +
-                          ' ' +
-                          $t('colaboradoresmin')
-                      "
-                      @submit="planningSubmitPerson"
-                    >
-                      <template
-                        #default="{
-                          rootProps,
-                          inputProps,
-                          inputListeners,
-                          resultListProps,
-                          resultListListeners,
-                          results,
-                          resultProps,
-                        }"
+              <template
+                v-if="isScheduleType && training.unities && training.unities.length > 1"
+              >
+                <div
+                  v-for="unityOpt in training.unities"
+                  :key="'plan-unityblock-' + planningUnityRefKey(unityOpt.referenceId)"
+                  class="w-100"
+                >
+                  <b-row>
+                    <b-col cols="12">
+                      <b-form-group
+                        :label-for="
+                          'planning-person-autocomplete-' +
+                            planningUnityRefKey(unityOpt.referenceId)
+                        "
                       >
-                        <div v-bind="rootProps">
-                          <input
-                            ref="planningPersonAutocompleteInput"
-                            v-bind="inputProps"
-                            v-on="inputListeners"
+                        <template v-slot:label>
+                          <span class="d-block font-weight-bold mb-1">
+                            {{ $t('quaiscolaboradoresparticiparaodaunidadeprefix')
+                            }}<span class="text-success">{{ unityOpt.name }}</span>{{
+                              $t('quaiscolaboradoresparticiparaodaunidadesuffix')
+                            }}<span class="text-danger"> *</span>
+                          </span>
+                        </template>
+                        <autocomplete
+                          :ref="'planAuto_' + planningUnityRefKey(unityOpt.referenceId)"
+                          :get-result-value="planningAutocompleteGetResultValue"
+                          :search="
+                            (input) =>
+                              filterPeoplePlanning(input, unityOpt.referenceId)
+                          "
+                          :disabled="
+                            !isValidForPlanningPeopleSearch || !canBeChange(key)
+                          "
+                          :debounce-time="500"
+                          :placeholder="
+                            $t('cliqueparaselecionar') +
+                              ' ' +
+                              $t('umoumais') +
+                              ' ' +
+                              $t('colaboradoresmin')
+                          "
+                          @submit="
+                            (p) =>
+                              planningSubmitPerson(p, unityOpt.referenceId)
+                          "
+                        >
+                          <template
+                            #default="{
+                              rootProps,
+                              inputProps,
+                              inputListeners,
+                              resultListProps,
+                              resultListListeners,
+                              results,
+                              resultProps,
+                            }"
                           >
-                          <ul
-                            v-bind="resultListProps"
-                            v-on="resultListListeners"
-                          >
-                            <li class="px-3 py-3">
-                              <b-form-checkbox
-                                v-model="toggleSelectAllPlanning"
-                                @change="planningOnToggleSelectAll"
+                            <div v-bind="rootProps">
+                              <input
+                                v-bind="inputProps"
+                                v-on="inputListeners"
                               >
-                                {{ $t("marcartodos") }}
-                              </b-form-checkbox>
-                            </li>
-                            <template v-for="(result, idx) in results">
-                              <li
-                                v-if="!result.hide && !result.disabled"
-                                :key="resultProps[idx].id"
-                                v-bind="resultProps[idx]"
+                              <ul
+                                v-bind="resultListProps"
+                                v-on="resultListListeners"
                               >
-                                {{ planningGetResultValue(result) }}
-                              </li>
-                              <p
-                                v-if="result.disabled"
-                                :key="'d-' + idx"
-                                style="text-align: center"
-                              >
-                                {{ result.text }}
-                              </p>
-                            </template>
-                          </ul>
-                        </div>
+                                <li class="px-3 py-3">
+                                  <b-form-checkbox
+                                    @change="
+                                      (checked) =>
+                                        planningOnToggleSelectAll(
+                                          checked,
+                                          unityOpt.referenceId
+                                        )
+                                    "
+                                  >
+                                    {{ $t("marcartodos") }}
+                                  </b-form-checkbox>
+                                </li>
+                                <template v-for="(result, ridx) in results">
+                                  <li
+                                    v-if="!result.hide && !result.disabled"
+                                    :key="resultProps[ridx].id"
+                                    v-bind="resultProps[ridx]"
+                                  >
+                                    {{ planningGetResultValue(result) }}
+                                  </li>
+                                  <p
+                                    v-if="result.disabled"
+                                    :key="'d-' + ridx"
+                                    style="text-align: center"
+                                  >
+                                    {{ result.text }}
+                                  </p>
+                                </template>
+                              </ul>
+                            </div>
+                          </template>
+                        </autocomplete>
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
+                  <b-row>
+                    <b-col cols="12">
+                      <DMSelectedPeopleView
+                        :value="
+                          personBondsForScheduleStructure(
+                            planning,
+                            unityOpt.referenceId
+                          )
+                        "
+                        @input="
+                          onPlanningBondsInputForUnity(
+                            unityOpt.referenceId,
+                            $event
+                          )
+                        "
+                        :disabled-delete-button="!canBeChange(key)"
+                        :can-remove-from-other-unity="false"
+                        :unities="[unityOpt.referenceId]"
+                      />
+                    </b-col>
+                  </b-row>
+                </div>
+              </template>
+              <template v-else>
+                <b-row>
+                  <b-col cols="12">
+                    <b-form-group label-for="planning-person-autocomplete">
+                      <template v-slot:label>
+                        <span
+                          v-if="
+                            training.unities &&
+                              training.unities.length === 1 &&
+                              training.unities[0].name
+                          "
+                          class="d-block font-weight-bold mb-1"
+                        >
+                          {{
+                            $t('quaiscolaboradoresparticiparaodaunidadeprefix')
+                          }}<span class="text-success">{{
+                            training.unities[0].name
+                          }}</span>{{ $t('quaiscolaboradoresparticiparaodaunidadesuffix')
+                          }}<span class="text-danger"> *</span>
+                        </span>
+                        <DMLabelRequired
+                          v-else
+                          label="quaiscolaboradoresparticiparaodotreinamento"
+                        />
                       </template>
-                    </autocomplete>
-                  </b-form-group>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="12">
-                  <DMSelectedPeopleView
-                    v-model="planning.addedPersonBonds"
-                    :disabled-delete-button="!canBeChange(key)"
-                    :can-remove-from-other-unity="false"
-                    :unities="
-                      planningSelectedUnityRefs.length
-                        ? planningSelectedUnityRefs
-                        : allUnities.map((u) => u.referenceId)
-                    "
-                  />
-                </b-col>
-              </b-row>
+                      <autocomplete
+                        ref="planningPersonAutocomplete"
+                        :get-result-value="planningAutocompleteGetResultValue"
+                        :search="(input) => filterPeoplePlanning(input)"
+                        :disabled="
+                          !isValidForPlanningPeopleSearch || !canBeChange(key)
+                        "
+                        :debounce-time="500"
+                        :placeholder="
+                          $t('cliqueparaselecionar') +
+                            ' ' +
+                            $t('umoumais') +
+                            ' ' +
+                            $t('colaboradoresmin')
+                        "
+                        @submit="(p) => planningSubmitPerson(p)"
+                      >
+                        <template
+                          #default="{
+                            rootProps,
+                            inputProps,
+                            inputListeners,
+                            resultListProps,
+                            resultListListeners,
+                            results,
+                            resultProps,
+                          }"
+                        >
+                          <div v-bind="rootProps">
+                            <input
+                              ref="planningPersonAutocompleteInput"
+                              v-bind="inputProps"
+                              v-on="inputListeners"
+                            >
+                            <ul
+                              v-bind="resultListProps"
+                              v-on="resultListListeners"
+                            >
+                              <li class="px-3 py-3">
+                                <b-form-checkbox
+                                  v-model="toggleSelectAllPlanning"
+                                  @change="planningOnToggleSelectAll($event)"
+                                >
+                                  {{ $t("marcartodos") }}
+                                </b-form-checkbox>
+                              </li>
+                              <template v-for="(result, idx) in results">
+                                <li
+                                  v-if="!result.hide && !result.disabled"
+                                  :key="resultProps[idx].id"
+                                  v-bind="resultProps[idx]"
+                                >
+                                  {{ planningGetResultValue(result) }}
+                                </li>
+                                <p
+                                  v-if="result.disabled"
+                                  :key="'d-' + idx"
+                                  style="text-align: center"
+                                >
+                                  {{ result.text }}
+                                </p>
+                              </template>
+                            </ul>
+                          </div>
+                        </template>
+                      </autocomplete>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="12">
+                    <DMSelectedPeopleView
+                      v-model="planning.addedPersonBonds"
+                      :disabled-delete-button="!canBeChange(key)"
+                      :can-remove-from-other-unity="false"
+                      :unities="
+                        planningSelectedUnityRefs.length
+                          ? planningSelectedUnityRefs
+                          : allUnities.map((u) => u.referenceId)
+                      "
+                    />
+                  </b-col>
+                </b-row>
+              </template>
             </template>
           </div>
         </template>
@@ -395,7 +546,131 @@
       @click="saveOrUpdateSchedules"
     >{{ $t("salvar") }}</b-button>
 
-    <template v-if="isPlanningDmPeopleLayout && schedules">
+    <template v-if="isScheduleType && isPlanningDmPeopleLayout && schedules">
+      <template v-if="structureCollapseSummaryGroups.length">
+        <div
+          v-for="group in structureCollapseSummaryGroups"
+          :key="'sch-collapse-' + group.referenceId"
+          class="training-planning-structure-accordion mb-2"
+        >
+          <div
+            v-b-toggle="collapseElId(group.referenceId)"
+            class="training-planning-structure-header"
+          >
+            <span class="training-planning-structure-header__title">{{
+              structureCollapseTitle(group)
+            }}</span>
+            <span class="training-planning-structure-header__chevron"><b-icon icon="chevron-down" /></span>
+          </div>
+          <b-collapse
+            :id="collapseElId(group.referenceId)"
+            v-model="structureCollapseOpen[group.referenceId]"
+          >
+            <div class="training-planning-structure-panel training-planning-structure-panel--saved-only">
+              <template v-for="idx in group.scheduleIndices">
+                <div
+                  v-if="nrShowSummaryCard(idx)"
+                  :key="'sch-sum-' + group.referenceId + '-' + idx"
+                  class="training-planning-summary-card mb-3"
+                >
+                  <div class="training-planning-summary-card__actions">
+                    <b-button
+                      v-b-tooltip.hover.bottom
+                      :title="$t('editar')"
+                      variant="outline-success"
+                      class="training-planning-summary-card__icon-btn training-planning-summary-card__icon-btn--edit"
+                      :disabled="!canBeChange(idx)"
+                      @click="nrStartEditSchedule(idx)"
+                    >
+                      <b-icon icon="pencil" />
+                    </b-button>
+                    <b-button
+                      v-b-tooltip.hover.bottom
+                      :title="$t('excluir')"
+                      variant="outline-danger"
+                      class="training-planning-summary-card__icon-btn ml-1"
+                      :disabled="!canBeChange(idx)"
+                      @click="nrDeleteSchedule(idx, group.referenceId)"
+                    >
+                      <b-icon icon="trash" variant="danger" />
+                    </b-button>
+                  </div>
+                  <div class="training-planning-summary-card__inner">
+                    <h3 class="training-planning-summary-card__title">
+                      {{ $t("agendamento") }} {{ scheduleOrdinalInGroup(group, idx) }}
+                    </h3>
+                    <div class="training-planning-summary-card__body">
+                      <b-row>
+                        <b-col md="6">
+                          <strong>{{ $t("dataprevistadeiniciolabel") }}</strong>
+                          {{ formatPlanningDateBr(schedules[idx].startDate) }}
+                        </b-col>
+                        <b-col md="6">
+                          <strong>{{ $t("dataterminolabel") }}</strong>
+                          {{ formatPlanningDateBr(schedules[idx].endDate) }}
+                        </b-col>
+                      </b-row>
+                      <b-row class="mt-2">
+                        <b-col md="6">
+                          <strong>{{ $t("checkderetencaolabel") }}</strong>
+                          {{ evaluationNameById(schedules[idx].newTrainingEvaluation) }}
+                        </b-col>
+                        <b-col md="6">
+                          <strong>{{ $t("avaliacaodereacaolabel") }}</strong>
+                          {{ formNameById(schedules[idx].newTrainingForm) }}
+                        </b-col>
+                      </b-row>
+                      <b-row class="mt-2">
+                        <b-col md="6">
+                          <strong>{{ $t("tempodeduracaolabel") }}</strong>
+                          {{ schedules[idx].timeDuration }} min
+                        </b-col>
+                        <b-col md="6">
+                          <strong>{{ $t("instrutorlabel") }}</strong>
+                          {{
+                            schedules[idx].instructor &&
+                              String(schedules[idx].instructor).trim()
+                              ? schedules[idx].instructor.trim()
+                              : $t("instrutornaoinformado")
+                          }}
+                        </b-col>
+                      </b-row>
+                      <template v-if="isNonRecurringSchedulesPlanning">
+                        <p class="mb-1 mt-2">
+                          <strong>{{ $t("pessoasparticipanteslabel") }}</strong>
+                        </p>
+                        <div>
+                          <b-badge
+                            v-for="(pb, pbi) in personBondsForScheduleStructure(schedules[idx], group.referenceId)"
+                            :key="(pb._id || pbi) + '-sch-p'"
+                            pill
+                            variant="success"
+                            class="mr-1 mb-1 training-planning-summary-person-badge"
+                          >{{ personBondDisplayName(pb) }}</b-badge>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </b-collapse>
+        </div>
+      </template>
+      <div
+        v-else-if="nrRegisteredSchedulesCount < 1"
+        class="training-planning-empty-state mb-3"
+      >
+        <p class="mb-1 font-weight-bold text-secondary">
+          {{ $t("nenhumagendamentocadastradoainda") }}
+        </p>
+        <p class="mb-0 small text-muted">
+          {{ $t("selecioneunidadepreenchadadosprimeiro") }}
+        </p>
+      </div>
+    </template>
+
+    <template v-if="isDaysAfterServiceType && isPlanningDmPeopleLayout && schedules">
       <div
         v-if="pendingUnityBadges.length"
         class="training-planning-pending-units mb-3"
@@ -412,9 +687,6 @@
             class="mr-1 mb-1 training-planning-pending-badge"
           >{{ u.name }}</b-badge>
         </div>
-      </div>
-      <div class="training-planning-status-pill mb-3">
-        {{ nrSchedulesRegisteredPillText }}
       </div>
       <template v-if="nrRegisteredSchedulesCount > 0">
         <template v-for="(sch, idx) in schedules">
@@ -543,6 +815,7 @@ import { positionRoleService } from '@/services/position-role-service'
 import { unitsMonitoredFilter } from '@/utils/unities-monitored-filter.js'
 import DMSelectedPeopleView from '@/components/dmpeople/DMSelectedPeopleView'
 import { getByFilterAndName } from '@/services/person-bond-service'
+import { ensureSchedules } from '@/services/new-training-service'
 import { required, minLength, requiredIf } from 'vuelidate/lib/validators'
 import moment from 'moment'
 
@@ -572,7 +845,8 @@ export default {
       toggleSelectAllPlanning: false,
       lastKeywordPlanning: '',
       nrEditingScheduleKey: null,
-      nrSummarySavedIndices: []
+      nrSummarySavedIndices: [],
+      structureCollapseOpen: {}
     }
   },
   validations() {
@@ -635,7 +909,12 @@ export default {
         this.newTrainingRegister.unities ||
         []
       const flat = this.flattenUnityRoots(this.unitsHierarchy)
-      return flat.filter((unity) => allowed.includes(unity.referenceId))
+      return flat.filter((unity) => {
+        if (!allowed.includes(unity.referenceId)) return false
+        const ch = unity.children
+        if (Array.isArray(ch) && ch.length > 0) return false
+        return true
+      })
     },
 
     planningSelectedUnityRefs() {
@@ -666,6 +945,36 @@ export default {
 
     isNonRecurringSchedulesPlanning() {
       return this.isScheduleType && !this.newTrainingRegister.isRecurringPlanning
+    },
+
+    /**
+     * Resumos já salvos agrupados por estrutura (colapses após salvar — tipo agendamentos).
+     */
+    structureCollapseSummaryGroups() {
+      if (!this.isScheduleType || !this.schedules) return []
+      const groups = []
+      for (const referenceId of this.cadastroUnityRefs) {
+        const scheduleIndices = []
+        this.schedules.forEach((s, i) => {
+          if (!this.nrShowSummaryCard(i)) return
+          const refs = Array.isArray(s.savedPlanningUnityRefs)
+            ? s.savedPlanningUnityRefs
+            : []
+          if (refs.includes(referenceId)) {
+            scheduleIndices.push(i)
+          }
+        })
+        if (!scheduleIndices.length) continue
+        const u = this.planningUnityOptions.find(
+          (o) => o.referenceId === referenceId
+        )
+        groups.push({
+          referenceId,
+          structureName: u ? u.name : String(referenceId),
+          scheduleIndices
+        })
+      }
+      return groups
     },
 
     cadastroUnityRefs() {
@@ -713,31 +1022,88 @@ export default {
     },
 
     pendingPlanningUnityOptions() {
+      if (this.isScheduleType) {
+        return this.planningUnityOptions.filter((o) => {
+          if (!o || o.referenceId == null) return false
+          const id = String(o.referenceId)
+          const used = this.nrSavedScheduleCountByUnityRef[id] || 0
+          return used < this.maxSchedulesFromCadastro
+        })
+      }
       const planned = this.nrEffectivelyPlannedUnityRefSet
-      return this.planningUnityOptions.filter(
-        (o) => !planned.has(o.referenceId)
-      )
+      return this.planningUnityOptions.filter((o) => {
+        if (!o || o.referenceId == null) return false
+        return !planned.has(o.referenceId)
+      })
+    },
+
+    /**
+     * Por estrutura: quantos agendamentos já salvos (resumo) referenciam cada referenceId.
+     * Usado para esconder estruturas no select quando atingem a quantidade máxima do cadastro.
+     */
+    nrSavedScheduleCountByUnityRef() {
+      const counts = {}
+      if (!this.isScheduleType || !this.schedules || !this.nrSummarySavedIndices) {
+        return counts
+      }
+      for (const i of this.nrSummarySavedIndices) {
+        const s = this.schedules[i]
+        if (!s) continue
+        const refs = Array.isArray(s.savedPlanningUnityRefs)
+          ? s.savedPlanningUnityRefs
+          : []
+        for (const raw of refs) {
+          const ref =
+            raw != null && typeof raw === 'object' && raw.referenceId != null
+              ? raw.referenceId
+              : raw
+          const key = ref != null ? String(ref) : ''
+          if (!key) continue
+          counts[key] = (counts[key] || 0) + 1
+        }
+      }
+      return counts
     },
 
     structureMultiselectOptions() {
-      if (!this.isPlanningDmPeopleLayout) {
-        return this.planningUnityOptions
+      const selectedRefs = new Set(
+        (this.training.unities || [])
+          .map((u) => u && u.referenceId != null && String(u.referenceId))
+          .filter(Boolean)
+      )
+      const canSelectStructureOption = (o) => {
+        if (!o || o.referenceId == null) return false
+        if (!this.isScheduleType) return true
+        const id = String(o.referenceId)
+        if (selectedRefs.has(id)) return true
+        const used = this.nrSavedScheduleCountByUnityRef[id] || 0
+        return used < this.maxSchedulesFromCadastro
       }
-      const pendingOpts = this.pendingPlanningUnityOptions
+
+      if (!this.isPlanningDmPeopleLayout) {
+        if (!this.isScheduleType) return this.planningUnityOptions
+        return this.planningUnityOptions.filter(canSelectStructureOption)
+      }
+      const pendingOpts = this.pendingPlanningUnityOptions.filter(
+        canSelectStructureOption
+      )
       const byRef = new Map(
-        pendingOpts.map((o) => [o.referenceId, o])
+        pendingOpts.map((o) => [String(o.referenceId), o])
       )
       for (const u of this.training.unities || []) {
         if (!u || u.referenceId == null) continue
-        if (!byRef.has(u.referenceId)) {
+        const id = String(u.referenceId)
+        if (!byRef.has(id)) {
           const full = this.planningUnityOptions.find(
-            (o) => o.referenceId === u.referenceId
+            (o) => String(o.referenceId) === id
           )
-          if (full) byRef.set(u.referenceId, full)
+          if (full) byRef.set(id, full)
         }
       }
       const merged = [...byRef.values()]
-      return merged.length ? merged : this.planningUnityOptions
+      return merged.length
+        ? merged
+        : this.planningUnityOptions.filter(canSelectStructureOption)
     },
 
     structureMultiselectPlaceholder() {
@@ -751,6 +1117,23 @@ export default {
         ' ' +
         this.$t('estruturasmin')
       )
+    },
+
+    /**
+     * Igual ao cadastro: “Marcar todos” na lista do multiselect (slot beforeList).
+     */
+    nrAllPlanningStructuresSelected: {
+      get() {
+        const opts = this.structureMultiselectOptions || []
+        if (!opts.length) return false
+        const selected = new Set(
+          (this.training.unities || []).map((u) => u.referenceId)
+        )
+        return opts.every((o) => selected.has(o.referenceId))
+      },
+      set(checked) {
+        this.nrOnToggleAllStructures(checked)
+      }
     },
 
     pendingUnityBadges() {
@@ -832,32 +1215,6 @@ export default {
 
     nrRegisteredSchedulesCount() {
       return (this.nrSummarySavedIndices && this.nrSummarySavedIndices.length) || 0
-    },
-
-    nrSchedulesRegisteredPillText() {
-      const count = this.nrRegisteredSchedulesCount
-      const max = this.maxSchedulesFromCadastro
-      const rest = Math.max(0, max - count)
-      const pendentes = this.pendingUnityRefsCount
-      if (this.isDaysAfterServiceType) {
-        if (pendentes < 1) {
-          return this.$t('diasapospillsempendentes')
-        }
-        if (count < 1) {
-          return this.$t('diasapospillpodecadastrar', { pendentes })
-        }
-        return this.$t('diasapospillcadastradoscomresto', {
-          count,
-          pendentes
-        })
-      }
-      if (count < 1) {
-        return this.$t('nenhumagendamentocadastradopodeate', { max })
-      }
-      if (count === 1) {
-        return this.$t('umagendamentocadastradopodemais', { rest })
-      }
-      return this.$t('nagendamentoscadastradospodemais', { count, rest })
     },
 
     nrUnityNamesFallback() {
@@ -974,6 +1331,35 @@ export default {
       this.$emit('alert', payload)
     },
 
+    collapseElId(ref) {
+      return `plan-str-${String(ref).replace(/[^a-zA-Z0-9_-]/g, '_')}`
+    },
+
+    structureCollapseTitle(group) {
+      const reg = this.structureRegisteredCount(group)
+      const max = this.maxSchedulesFromCadastro
+      return `${group.structureName} – ${reg}/${max} ${this.$t('agendamentos').toLowerCase()} cadastrados`
+    },
+
+    structureRegisteredCount(group) {
+      return group.scheduleIndices.length
+    },
+
+    scheduleOrdinalInGroup(group, idx) {
+      const i = group.scheduleIndices.indexOf(idx)
+      return i >= 0 ? i + 1 : idx + 1
+    },
+
+    /** Abre colapses de resumo por estrutura na primeira carga (evita fechado sem modelo). */
+    initSavedStructureCollapseOpen() {
+      const refs = this.cadastroUnityRefs || []
+      refs.forEach((r) => {
+        if (this.structureCollapseOpen[r] === undefined) {
+          this.$set(this.structureCollapseOpen, r, true)
+        }
+      })
+    },
+
     /** Rascunho com qualquer dado preenchido (dias após: slot vazio exige unidades pendentes). */
     scheduleRowHasUsableDraft(s) {
       if (!s) return false
@@ -1011,6 +1397,49 @@ export default {
       }
     },
 
+    /**
+     * Controla o multiselect sem v-model para, no tipo agendamentos, comparar com o valor
+     * anterior e impedir incluir estrutura que já atingiu o máximo de agendamentos salvos.
+     */
+    nrOnPlanningUnitiesInput(value) {
+      const list = Array.isArray(value) ? value : []
+      if (!this.isScheduleType) {
+        this.training.unities = list
+        return
+      }
+      const max = this.maxSchedulesFromCadastro
+      const counts = this.nrSavedScheduleCountByUnityRef
+      const prev = this.training.unities || []
+      const prevSet = new Set(
+        prev.map((u) => (u && u.referenceId != null ? String(u.referenceId) : '')).filter(Boolean)
+      )
+      const next = list.filter((u) => {
+        if (!u || u.referenceId == null) return false
+        const id = String(u.referenceId)
+        const used = counts[id] || 0
+        if (used < max) return true
+        return prevSet.has(id)
+      })
+      this.training.unities = next
+    },
+
+    serializeSchedulesForApi() {
+      return _.cloneDeep(this.schedules).map((schedule) => {
+        schedule.addedPersonBonds = schedule.addedPersonBonds.map(
+          (personbond) => personbond._id
+        )
+
+        schedule.removedPersonBonds = schedule.removedPersonBonds.map(
+          (personbond) => String(personbond)
+        )
+        schedule.timeDuration = Number(schedule.timeDuration)
+        if (!schedule.startDate) schedule.startDate = null
+        if (!schedule.endDate) schedule.endDate = null
+
+        return schedule
+      })
+    },
+
     async saveOrUpdateSchedules() {
       try {
         showLoader()
@@ -1044,20 +1473,7 @@ export default {
             )
           }
         }
-        const schedules = _.cloneDeep(this.schedules).map((schedule) => {
-          schedule.addedPersonBonds = schedule.addedPersonBonds.map(
-            (personbond) => personbond._id
-          )
-
-          schedule.removedPersonBonds = schedule.removedPersonBonds.map(
-            (personbond) => String(personbond)
-          )
-          schedule.timeDuration = Number(schedule.timeDuration)
-          if (!schedule.startDate) schedule.startDate = null
-          if (!schedule.endDate) schedule.endDate = null
-
-          return schedule
-        })
+        const schedules = this.serializeSchedulesForApi()
 
         const lastSch = schedules[schedules.length - 1]
         const message =
@@ -1068,8 +1484,26 @@ export default {
         await this.$store.dispatch('newTrainingRegister/saveSchedules', {
           _id: this.newTrainingRegister._id,
           schedules,
-          unities: this.training.unities.map((u) => u.referenceId)
+          unities: (this.training.unities || []).map((u) => u.referenceId)
         })
+
+        if (this.isPlanningDmPeopleLayout && this.isScheduleType && this.schedules) {
+          const padded = ensureSchedules(
+            _.cloneDeep({
+              ...this.newTrainingRegister,
+              schedules: this.schedules
+            })
+          )
+          const next = padded.schedules || []
+          for (let i = this.schedules.length; i < next.length; i++) {
+            const sch = _.cloneDeep(next[i])
+            sch.removedPersonBonds = sch.removedPersonBonds || []
+            sch.addedPersonBonds = sch.addedPersonBonds || []
+            sch.startDate = sch.startDate ? sch.startDate.split('T')[0] : null
+            sch.endDate = sch.endDate ? sch.endDate.split('T')[0] : null
+            this.schedules.push(sch)
+          }
+        }
 
         this.showAlert( { message, type: 'success' })
         this.nrEditingScheduleKey = null
@@ -1083,6 +1517,9 @@ export default {
           !this.nrSummarySavedIndices.includes(nrSavedKey)
         ) {
           this.nrMergeSavedSummaryIndex(nrSavedKey)
+        }
+        if (this.isPlanningDmPeopleLayout && nrShouldRegisterCard) {
+          this.training.unities = []
         }
       } catch (error) {
         this.err =
@@ -1175,7 +1612,13 @@ export default {
         options: { populate: 'positions positionRoles' }
       })
 
-      const schedules = _.cloneDeep(this.newTrainingRegister.schedules || [])
+      const paddedRegister = ensureSchedules(
+        _.cloneDeep({
+          ...this.newTrainingRegister,
+          schedules: this.newTrainingRegister.schedules || []
+        })
+      )
+      const schedules = paddedRegister.schedules || []
       this.training.name = this.newTrainingRegister.name
 
       await this.resolvePositionsAndRolesFromCadastro()
@@ -1240,6 +1683,9 @@ export default {
         // Só após dados vindos do backend: cartões = agendamentos já persistidos, não rascunho no formulário
         this.hydrateNrSummarySavedIndicesFromSchedules()
         this.nrEditingScheduleKey = null
+        if (this.isScheduleType) {
+          this.initSavedStructureCollapseOpen()
+        }
       }
     },
 
@@ -1289,13 +1735,76 @@ export default {
       this.nrEditingScheduleKey = index
     },
 
-    nrDeleteSchedule(index) {
+    nrDeleteSchedule(index, structureReferenceId = null) {
       if (!this.canBeChange(index) || !this.schedules || !this.schedules[index]) {
         return
       }
       const msg = this.$t('certezaexcluiragendamento')
       const go = async () => {
         const sch = this.schedules[index]
+        const norm = (x) => (x == null ? '' : String(x))
+        const rawRefs = Array.isArray(sch.savedPlanningUnityRefs)
+          ? sch.savedPlanningUnityRefs
+          : []
+        const refs = rawRefs.map((r) =>
+          r != null && typeof r === 'object' && r.referenceId != null
+            ? r.referenceId
+            : r
+        )
+
+        const removeOneStructure =
+          this.isScheduleType &&
+          structureReferenceId != null &&
+          refs.length > 1 &&
+          refs.some((r) => norm(r) === norm(structureReferenceId))
+
+        if (removeOneStructure) {
+          const target = norm(structureReferenceId)
+          const nextRefs = refs.filter((r) => norm(r) !== target)
+          const labelParts = nextRefs.map((rid) => {
+            const u = this.planningUnityOptions.find(
+              (o) => norm(o.referenceId) === norm(rid)
+            )
+            return u ? u.name : String(rid)
+          })
+          this.$set(sch, 'savedPlanningUnityRefs', nextRefs)
+          this.$set(
+            sch,
+            'savedStructureLabels',
+            labelParts.filter(Boolean).join(', ')
+          )
+          try {
+            showLoader()
+            const schedules = this.serializeSchedulesForApi()
+            await this.$store.dispatch('newTrainingRegister/saveSchedules', {
+              _id: this.newTrainingRegister._id,
+              schedules,
+              unities: (this.training.unities || []).map((u) => u.referenceId)
+            })
+            await this.removePlannedUnityRefs({
+              _id: this.newTrainingRegister._id,
+              refs: [structureReferenceId]
+            })
+            this.showAlert({
+              message: this.$t('planejamento') + ' ' + this.$t('atualizado'),
+              type: 'success'
+            })
+          } catch (error) {
+            this.err =
+              error.response &&
+              error.response.data &&
+              error.response.data.message
+            this.showAlert({
+              message: this.errorMessage,
+              type: 'danger'
+            })
+          } finally {
+            hideLoader()
+          }
+          this.fetchEligibles()
+          return
+        }
+
         const id = sch._id
         const removed = sch.removedPersonBonds || []
         const refsToRelease = Array.isArray(sch.savedPlanningUnityRefs)
@@ -1393,7 +1902,43 @@ export default {
         : result.person.name
     },
 
-    async filterPeoplePlanning(input) {
+    /**
+     * Obrigatório para @trevoreyre/autocomplete-vue: o padrão é `result => result`,
+     * o que coloca o objeto inteiro no input e exibe "[object Object]".
+     */
+    planningAutocompleteGetResultValue(result) {
+      if (!result || result.disabled) return ''
+      return this.planningGetResultValue(result)
+    },
+
+    planningUnityRefKey(ref) {
+      return String(ref == null ? '' : ref).replace(/[^a-zA-Z0-9_-]/g, '_')
+    },
+
+    /** Colaboradores do vínculo cuja unidade coincide com a estrutura (resumo / blocos por empresa). */
+    personBondsForScheduleStructure(schedule, structureReferenceId) {
+      if (!schedule || structureReferenceId == null) return []
+      const target = String(structureReferenceId)
+      const bonds = schedule.addedPersonBonds || []
+      return bonds.filter((pb) => {
+        const r = this.planningBondUnityRef(pb)
+        return r != null && String(r) === target
+      })
+    },
+
+    onPlanningBondsInputForUnity(unityRef, newBonds) {
+      const key = this.nrFormScheduleKey
+      if (key == null || !this.schedules || !this.schedules[key]) return
+      const planning = this.schedules[key]
+      const target = String(unityRef)
+      const rest = (planning.addedPersonBonds || []).filter((pb) => {
+        const r = this.planningBondUnityRef(pb)
+        return r == null || String(r) !== target
+      })
+      this.$set(planning, 'addedPersonBonds', [...rest, ...(newBonds || [])])
+    },
+
+    async filterPeoplePlanning(input, singleUnityRef = null) {
       const key = this.nrFormScheduleKey
       if (key === null || !this.schedules || !this.schedules[key]) return []
 
@@ -1401,7 +1946,10 @@ export default {
       const bonds = this.bondIdsForPlanningSearch
       const positions = this.positionIdsForPlanningSearch
       const roles = this.roleIdsForPlanningSearch
-      const unities = this.planningSelectedUnityRefs
+      const unities =
+        singleUnityRef != null
+          ? [singleUnityRef]
+          : this.planningSelectedUnityRefs
 
       if (!bonds.length || !positions.length || !unities.length) {
         return []
@@ -1433,7 +1981,7 @@ export default {
       ]
     },
 
-    planningSubmitPerson(person) {
+    planningSubmitPerson(person, autocompleteUnityRef) {
       const key = this.nrFormScheduleKey
       if (key === null || !person || !this.schedules) return
 
@@ -1446,25 +1994,56 @@ export default {
       }
 
       this.$nextTick(() => {
-        const ref = this.$refs.planningPersonAutocomplete
-        if (ref && typeof ref.handleInput === 'function') {
-          ref.handleInput({ target: { value: '' } })
+        if (autocompleteUnityRef != null) {
+          const refName = 'planAuto_' + this.planningUnityRefKey(autocompleteUnityRef)
+          const r = this.$refs[refName]
+          const comp = Array.isArray(r) ? r[0] : r
+          if (comp && typeof comp.handleInput === 'function') {
+            comp.handleInput({ target: { value: '' } })
+          }
+        } else {
+          const ref = this.$refs.planningPersonAutocomplete
+          if (ref && typeof ref.handleInput === 'function') {
+            ref.handleInput({ target: { value: '' } })
+          }
         }
       })
     },
 
-    async planningOnToggleSelectAll(toggle) {
-      if (toggle) {
-        await this.planningSelectAllPeople()
+    async planningOnToggleSelectAll(toggleOrEvent, singleUnityRef = null) {
+      const checked =
+        typeof toggleOrEvent === 'boolean'
+          ? toggleOrEvent
+          : !!(
+            toggleOrEvent &&
+            toggleOrEvent.target &&
+            toggleOrEvent.target.checked
+          )
+      if (checked) {
+        await this.planningSelectAllPeople(singleUnityRef)
       } else {
-        this.planningUnselectAllPeople()
+        this.planningUnselectAllPeople(singleUnityRef)
       }
-      const ref = this.$refs.planningPersonAutocomplete
-      if (ref && typeof ref.handleInput === 'function') {
-        ref.handleInput({
-          target: { value: this.lastKeywordPlanning || '' }
-        })
-      }
+      const suffix =
+        singleUnityRef != null ? this.planningUnityRefKey(singleUnityRef) : null
+      this.$nextTick(() => {
+        if (suffix != null) {
+          const r = this.$refs['planAuto_' + suffix]
+          const comp = Array.isArray(r) ? r[0] : r
+          if (comp && typeof comp.handleInput === 'function') {
+            comp.handleInput({
+              target: { value: this.lastKeywordPlanning || '' }
+            })
+          }
+        } else {
+          const ref = this.$refs.planningPersonAutocomplete
+          if (ref && typeof ref.handleInput === 'function') {
+            ref.handleInput({
+              target: { value: this.lastKeywordPlanning || '' }
+            })
+          }
+        }
+      })
     },
 
     planningBondUnityRef(pb) {
@@ -1474,10 +2053,17 @@ export default {
       return u
     },
 
-    planningUnselectAllPeople() {
+    planningUnselectAllPeople(singleUnityRef = null) {
       const key = this.nrFormScheduleKey
       if (key === null || !this.schedules) return
       const planning = this.schedules[key]
+      if (singleUnityRef != null) {
+        const target = String(singleUnityRef)
+        planning.addedPersonBonds = (planning.addedPersonBonds || []).filter(
+          (pb) => String(this.planningBondUnityRef(pb)) !== target
+        )
+        return
+      }
       const allowed = new Set(this.planningSelectedUnityRefs)
       planning.addedPersonBonds = (planning.addedPersonBonds || []).filter(
         (pb) => {
@@ -1487,7 +2073,7 @@ export default {
       )
     },
 
-    async planningSelectAllPeople() {
+    async planningSelectAllPeople(singleUnityRef = null) {
       const key = this.nrFormScheduleKey
       if (key === null || !this.schedules || !this.schedules[key]) return
 
@@ -1495,7 +2081,10 @@ export default {
       const bonds = this.bondIdsForPlanningSearch
       const positions = this.positionIdsForPlanningSearch
       const roles = this.roleIdsForPlanningSearch
-      const unities = this.planningSelectedUnityRefs
+      const unities =
+        singleUnityRef != null
+          ? [singleUnityRef]
+          : this.planningSelectedUnityRefs
 
       if (!bonds.length || !positions.length || !unities.length) return
 
@@ -1512,8 +2101,10 @@ export default {
           excluded
         )
         const docs = data.docs != null ? data.docs : data
+        const clearRef =
+          singleUnityRef != null ? singleUnityRef : undefined
         for (const doc of docs) {
-          this.planningSubmitPerson(doc)
+          this.planningSubmitPerson(doc, clearRef)
         }
       } catch (e) {
         this.showAlert({
@@ -1549,8 +2140,11 @@ export default {
     },
 
     canBeChange(index) {
-      const storeSch = this.newTrainingRegister.schedules[index]
-      if (!storeSch) return false
+      if (!this.schedules || !this.schedules[index]) return false
+      const storeSch =
+        this.newTrainingRegister.schedules &&
+        this.newTrainingRegister.schedules[index]
+      if (!storeSch && !this.isPlanningDmPeopleLayout) return false
 
       if (!this.$can('manage', this.$store.state.screens.screens.records)) {
         return false
@@ -1666,16 +2260,6 @@ export default {
   padding: 0.35em 0.65em;
 }
 
-.training-planning-status-pill {
-  display: inline-block;
-  background: #53933a;
-  color: #fff;
-  padding: 0.35rem 0.9rem;
-  border-radius: 999px;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
 .training-planning-summary-card {
   position: relative;
   border: 1px solid #53933a;
@@ -1729,6 +2313,76 @@ export default {
 
 .training-planning-summary-person-badge {
   font-weight: 500;
+}
+
+.training-planning-structure-accordion {
+  border-radius: 8px;
+  /* não usar overflow:hidden — recorta a lista do autocomplete de colaboradores */
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+.training-planning-structure-accordion .collapse {
+  overflow: visible !important;
+}
+
+.training-planning-structure-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1rem;
+  background: #fff;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.training-planning-structure-header:hover {
+  border-color: #c0c4cc;
+}
+
+.training-planning-structure-header__title {
+  font-weight: 700;
+  color: #212529;
+  font-size: 0.95rem;
+  padding-right: 0.75rem;
+}
+
+.training-planning-structure-header__chevron {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 1px solid #53933a;
+  color: #53933a;
+}
+
+.training-planning-structure-panel {
+  border: 1px solid #dcdcdc;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 1rem 1rem 1.25rem;
+  margin-top: -1px;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+.training-planning-structure-panel .training-planning-nr-fields {
+  overflow: visible;
+  position: relative;
+  z-index: 2;
+}
+
+/* Lista suspensa do autocomplete acima dos cartões e do próximo colapse */
+.training-planning-structure-panel .autocomplete [role='listbox'],
+.training-planning-structure-panel .autocomplete ul {
+  z-index: 2000 !important;
 }
 
 </style>

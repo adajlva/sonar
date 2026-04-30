@@ -928,13 +928,11 @@ export default {
 
     canBeChange() {
       if (
-        this.$can('manage', this.$store.state.screens.screens.records) &&
-        (this.isAdmin || !this.newTrainingRegister.createdByAdmin) &&
-        !this.isStartedTraining(this.newTrainingRegister)
+        !this.$can('manage', this.$store.state.screens.screens.records)
       ) {
-        return true
+        return false
       }
-      return false
+      return this.isAdmin || !this.newTrainingRegister.createdByAdmin
     },
 
     scheduleTypes() {
@@ -1838,19 +1836,6 @@ export default {
       return true
     },
 
-    isStartedTraining(newTraining) {
-      if (!newTraining || !newTraining.schedules) return false
-
-      if (newTraining.type === newTrainingTypes.daysAfterTheStartService) {
-        return newTraining.schedules[0].newTrainingForm
-      }
-
-      return Boolean(
-        newTraining.schedules.find((schedule) =>
-          moment(new Date()).isAfter(moment(schedule.startDate))
-        )
-      )
-    },
     positionTypesRemoved(item) {
       const { _id: itemId } = item
 
